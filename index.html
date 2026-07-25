@@ -1,0 +1,1411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Finding Ground — A Davao City Field Almanac</title>
+<meta name="description" content="A field almanac for weighing where to plant roots across six Davao City barangays.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Ctext y=%22.9em%22 font-size=%2290%22%3E%F0%9F%A7%AD%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..900;1,9..144,300..900&family=Hanken+Grotesk:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   FINDING GROUND — a field almanac for Davao City relocation
+   ============================================================ */
+
+:root{
+  /* paper & ink */
+  --paper:        #FBF7EF;
+  --paper-sunk:   #F2EAD9;
+  --paper-raised: #FFFFFF;
+  --ink:          #241F19;
+  --ink-soft:     #6B6155;
+  --ink-faint:    #A79D8C;
+  --rule:         #E1D5BE;
+  --rule-soft:    #EBE2CD;
+
+  /* tier semantics (score quality) */
+  --palm:         #3D7355;
+  --palm-soft:    #E3EEE2;
+  --sun:          #C4882B;
+  --sun-soft:     #F6E9CE;
+  --clay:         #BC5B3E;
+  --clay-soft:    #F3E0D5;
+
+  /* criterion identity (icons, sliders, radar axes) */
+  --c-safety:     #3D7355;
+  --c-schools:    #4F7186;
+  --c-atmos:      #7C8F4E;
+  --c-access:     #86577A;
+
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
+  --radius-pill: 999px;
+
+  --shadow-sm: 0 1px 2px rgba(43,32,14,.06);
+  --shadow-md: 0 10px 24px -14px rgba(43,32,14,.28), 0 2px 8px rgba(43,32,14,.06);
+  --shadow-lift: 0 20px 44px -18px rgba(43,32,14,.34);
+
+  --ease: cubic-bezier(.22,.61,.36,1);
+  --dur-fast: 140ms;
+  --dur: 320ms;
+  --dur-slow: 560ms;
+
+  --font-display: 'Fraunces', 'Iowan Old Style', 'Palatino Linotype', Georgia, serif;
+  --font-body: 'Hanken Grotesk', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+}
+
+*, *::before, *::after{ box-sizing: border-box; }
+html{ -webkit-text-size-adjust:100%; }
+body{
+  margin:0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+  position: relative;
+}
+img,svg{ display:block; max-width:100%; }
+button, input, select, textarea{ font-family: inherit; font-size: inherit; color: inherit; }
+button{ cursor:pointer; }
+a{ color: var(--palm); }
+.num{ font-variant-numeric: tabular-nums lining-nums; font-feature-settings: "tnum" 1, "lnum" 1; }
+
+.visually-hidden{
+  position:absolute !important; width:1px; height:1px; margin:-1px; padding:0;
+  overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; border:0;
+}
+
+:focus-visible{ outline: 2px solid var(--ink); outline-offset: 2px; border-radius: 4px; }
+
+/* ---------- background atmosphere ---------- */
+.bg-grain{ position:fixed; inset:0; z-index:0; pointer-events:none; opacity:.4; mix-blend-mode:multiply; }
+
+.app{ position:relative; z-index:1; max-width:1240px; margin:0 auto; padding: clamp(20px,4vw,56px) clamp(18px,4vw,40px) 80px; }
+
+/* ---------- kicker / section label ---------- */
+.kicker{
+  display:flex; align-items:center; gap:10px;
+  font-size:11px; letter-spacing:.14em; text-transform:uppercase;
+  color: var(--ink-soft); font-weight:600; margin: 0 0 14px;
+}
+.kicker .rule{ flex:1; height:1px; background: var(--rule); }
+.kicker svg{ width:14px; height:14px; flex-shrink:0; }
+
+/* ---------- header ---------- */
+.masthead{ padding-bottom: 28px; border-bottom: 1px solid var(--rule); margin-bottom: 36px; }
+.masthead-top{ display:flex; align-items:center; gap:10px; margin-bottom:18px; }
+.compass{ width:26px; height:26px; color: var(--ink-soft); flex-shrink:0; }
+.eyebrow{ font-size:12px; letter-spacing:.16em; text-transform:uppercase; color: var(--ink-soft); font-weight:600; }
+.masthead h1{
+  font-family: var(--font-display);
+  font-weight:600; font-variation-settings: "opsz" 40;
+  font-size: clamp(34px, 5.4vw, 58px);
+  line-height:1.02; letter-spacing:-.01em; margin: 0 0 12px;
+}
+.masthead h1 em{ font-style:italic; color: var(--palm); }
+.masthead p.lede{ max-width:640px; color: var(--ink-soft); font-size:16.5px; margin:0 0 18px; }
+.masthead-stats{ display:flex; flex-wrap:wrap; gap: 10px 28px; font-size:13px; color: var(--ink-soft); }
+.masthead-stats strong{ color:var(--ink); font-weight:700; }
+.masthead-stats .dot{ opacity:.5; }
+
+/* ---------- panel shell ---------- */
+.panel{
+  background: color-mix(in srgb, var(--paper-raised) 62%, transparent);
+  backdrop-filter: blur(6px);
+  border: 1px solid var(--rule); border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  padding: 26px clamp(18px,3vw,30px);
+  margin-bottom: 28px;
+}
+.panel-head{ display:flex; align-items:baseline; justify-content:space-between; gap:16px; flex-wrap:wrap; margin-bottom:18px; }
+.panel-head h2{ font-family:var(--font-display); font-size:22px; font-weight:600; margin:0; }
+.panel-head .sub{ font-size:13px; color:var(--ink-soft); }
+
+/* ---------- weight sliders ---------- */
+.weights-grid{ display:grid; grid-template-columns: repeat(auto-fit, minmax(230px,1fr)); gap: 22px 28px; }
+.weight-row .weight-label{ display:flex; align-items:center; gap:9px; margin-bottom:10px; }
+.weight-row .weight-icon{
+  width:30px; height:30px; border-radius:9px; display:flex; align-items:center; justify-content:center;
+  background: color-mix(in srgb, var(--accent) 14%, var(--paper-sunk)); color: var(--accent); flex-shrink:0;
+}
+.weight-row .weight-icon svg{ width:16px; height:16px; }
+.weight-row .weight-name{ font-weight:600; font-size:14.5px; flex:1; }
+.weight-row .weight-val{
+  font-family: var(--font-display); font-weight:600; font-size:15px; min-width:44px; text-align:right;
+  color: var(--accent);
+}
+.range-wrap{ position:relative; padding-top:2px; }
+.range{
+  -webkit-appearance:none; appearance:none; width:100%; height:6px; border-radius:999px;
+  background: linear-gradient(to right, var(--accent) 0%, var(--accent) var(--pct,50%), var(--rule-soft) var(--pct,50%), var(--rule-soft) 100%);
+  outline:none; margin:0; touch-action: pan-y;
+}
+.range::-webkit-slider-runnable-track{ height:6px; border-radius:999px; background:transparent; }
+.range::-webkit-slider-thumb{
+  -webkit-appearance:none; width:20px; height:20px; border-radius:50%;
+  background: var(--paper-raised); border:3px solid var(--accent);
+  box-shadow: var(--shadow-sm); cursor:pointer; margin-top:0;
+  transition: transform var(--dur-fast) var(--ease), box-shadow var(--dur-fast) var(--ease);
+}
+.range::-webkit-slider-thumb:hover{ transform: scale(1.15); box-shadow: 0 0 0 7px color-mix(in srgb, var(--accent) 16%, transparent); }
+.range:active::-webkit-slider-thumb{ transform: scale(1.05); }
+.range::-moz-range-track{ height:6px; background: var(--rule-soft); border-radius:999px; }
+.range::-moz-range-progress{ height:6px; background: var(--accent); border-radius:999px; }
+.range::-moz-range-thumb{
+  width:20px; height:20px; border-radius:50%; background: var(--paper-raised);
+  border:3px solid var(--accent); box-shadow: var(--shadow-sm); cursor:pointer;
+}
+.range-scale{ display:flex; justify-content:space-between; font-size:10.5px; color: var(--ink-faint); margin-top:5px; }
+
+.weights-foot{ display:flex; justify-content:flex-end; margin-top:20px; }
+
+/* ---------- buttons ---------- */
+.btn{
+  display:inline-flex; align-items:center; gap:8px; border-radius: var(--radius-pill);
+  padding: 10px 18px; font-weight:600; font-size:13.5px; border:1px solid transparent;
+  transition: transform var(--dur-fast) var(--ease), box-shadow var(--dur-fast) var(--ease), background var(--dur-fast) var(--ease), border-color var(--dur-fast) var(--ease);
+  line-height:1;
+}
+.btn svg{ width:15px; height:15px; }
+.btn:active{ transform: scale(.96); }
+.btn-primary{ background: var(--palm); color:#F7F5EC; box-shadow: var(--shadow-sm); }
+.btn-primary:hover{ box-shadow: var(--shadow-md); transform: translateY(-1px); }
+.btn-ghost{ background:transparent; border-color: var(--rule); color: var(--ink); }
+.btn-ghost:hover{ background: var(--paper-sunk); border-color: var(--ink-faint); }
+.btn-text{ background:none; border:none; padding:6px 4px; color: var(--ink-soft); font-weight:600; font-size:13px; }
+.btn-text:hover{ color: var(--ink); }
+.btn-icon{
+  width:34px; height:34px; border-radius:50%; border:1px solid var(--rule); background: var(--paper-raised);
+  display:inline-flex; align-items:center; justify-content:center; color: var(--ink-soft); padding:0;
+}
+.btn-icon svg{ width:15px; height:15px; }
+.btn-icon:hover{ color: var(--ink); border-color: var(--ink-faint); background: var(--paper-sunk); }
+.btn-danger-step{ color: var(--clay); }
+
+/* ---------- filter bar ---------- */
+.filterbar{ display:flex; flex-wrap:wrap; align-items:center; gap:16px 22px; }
+.field-search{
+  position:relative; flex: 1 1 220px; min-width:200px;
+}
+.field-search svg{ position:absolute; left:14px; top:50%; transform:translateY(-50%); width:16px; height:16px; color: var(--ink-faint); }
+.field-search input{
+  width:100%; padding: 11px 14px 11px 38px; border-radius: var(--radius-pill);
+  border:1px solid var(--rule); background: var(--paper-sunk); transition: border-color var(--dur-fast) var(--ease), background var(--dur-fast) var(--ease);
+}
+.field-search input:focus{ background: var(--paper-raised); border-color: var(--ink-faint); }
+.field-search input::placeholder{ color: var(--ink-faint); }
+
+.field-minsafety{ display:flex; align-items:center; gap:10px; flex: 1 1 220px; min-width:220px; }
+.field-minsafety label{ font-size:12.5px; color: var(--ink-soft); font-weight:600; white-space:nowrap; }
+.field-minsafety .range-wrap{ flex:1; }
+.field-minsafety .minsafety-val{ font-family: var(--font-display); font-weight:600; font-size:14px; min-width:30px; }
+
+.segmented{ display:inline-flex; background: var(--paper-sunk); border-radius: var(--radius-pill); padding:3px; border:1px solid var(--rule); }
+.segmented button{
+  border:none; background:none; padding:8px 16px; border-radius: var(--radius-pill); font-weight:600; font-size:13px;
+  color: var(--ink-soft); transition: background var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease), box-shadow var(--dur-fast) var(--ease);
+}
+.segmented button.is-active{ background: var(--paper-raised); color: var(--ink); box-shadow: var(--shadow-sm); }
+.segmented button svg{ width:14px; height:14px; margin-right:6px; vertical-align:-2px; }
+
+.filterbar-actions{ display:flex; align-items:center; gap:12px; margin-left:auto; }
+
+/* ---------- tags ---------- */
+.tag{ display:inline-flex; align-items:center; gap:5px; font-size:11px; font-weight:700; letter-spacing:.04em; text-transform:uppercase; padding:5px 10px; border-radius: var(--radius-pill); }
+.tag svg{ width:11px; height:11px; }
+.tag-active{ background: var(--palm-soft); color: var(--palm); }
+.tag-risk{ background: var(--clay-soft); color: var(--clay); }
+
+/* ---------- grid of cards ---------- */
+#gridView{ display:grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 22px; }
+.card{
+  background: var(--paper-raised); border:1px solid var(--rule); border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm); padding: 22px 22px 18px; position:relative; overflow:hidden;
+  opacity:0; transform: translateY(10px);
+  animation: cardIn var(--dur-slow) var(--ease) forwards;
+  transition: box-shadow var(--dur) var(--ease), transform var(--dur) var(--ease);
+}
+.card:hover{ box-shadow: var(--shadow-lift); transform: translateY(-2px); }
+.card.is-leading{ border-color: color-mix(in srgb, var(--sun) 55%, var(--rule)); box-shadow: 0 0 0 1px color-mix(in srgb, var(--sun) 35%, transparent), var(--shadow-sm); }
+@keyframes cardIn{ from{ opacity:0; transform: translateY(14px); } to{ opacity:1; transform:translateY(0); } }
+
+.card-top{ display:flex; align-items:flex-start; justify-content:space-between; gap:12px; margin-bottom:14px; }
+.rank-badge{ display:flex; flex-direction:column; align-items:flex-start; }
+.rank-badge .n{ font-family: var(--font-display); font-size:26px; font-weight:600; line-height:1; color: var(--ink-faint); }
+.card.is-leading .rank-badge .n{ color: var(--sun); }
+.rank-badge .lbl{ font-size:9px; letter-spacing:.12em; text-transform:uppercase; color: var(--ink-faint); margin-top:2px; }
+
+.card-name{ font-family: var(--font-display); font-size:24px; font-weight:600; margin: 2px 0 2px; letter-spacing:-.005em; }
+
+.card-dial{ position:relative; width:68px; height:68px; flex-shrink:0; }
+.card-dial svg{ width:100%; height:100%; transform: rotate(-90deg); }
+.card-dial circle{ fill:none; stroke-width:6; }
+.card-dial .track{ stroke: var(--rule-soft); }
+.card-dial .prog{ stroke-linecap:round; transition: stroke-dashoffset var(--dur-slow) var(--ease), stroke var(--dur) var(--ease); }
+.card-dial .val{
+  position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center;
+}
+.card-dial .val .n{ font-family: var(--font-display); font-weight:600; font-size:17px; line-height:1; }
+.card-dial .val .d{ font-size:8.5px; color: var(--ink-faint); margin-top:2px; }
+
+.metric-list{ display:flex; flex-direction:column; gap:9px; margin: 14px 0 16px; }
+.metric-row{ display:grid; grid-template-columns: 20px 88px 1fr 34px; align-items:center; gap:9px; }
+.metric-row .m-icon{ width:16px; height:16px; }
+.metric-row .m-name{ font-size:12px; color: var(--ink-soft); font-weight:600; }
+.metric-row .m-bar{ position:relative; height:6px; border-radius:999px; background: var(--rule-soft); overflow:hidden; }
+.metric-row .m-bar .fill{ position:absolute; inset:0 auto 0 0; border-radius:999px; transition: width var(--dur-slow) var(--ease), background var(--dur) var(--ease); }
+.metric-row .m-bar .ticks{ position:absolute; inset:0; display:flex; }
+.metric-row .m-bar .ticks span{ flex:1; border-right:1px solid rgba(255,255,255,.55); }
+.metric-row .m-bar .ticks span:last-child{ border-right:none; }
+.metric-row .m-val{ font-family: var(--font-display); font-weight:600; font-size:13px; text-align:right; }
+
+.card-notes{ display:flex; flex-direction:column; gap:10px; padding-top:12px; border-top:1px dashed var(--rule); margin-bottom:14px; }
+.note-block .note-label{ font-size:10px; letter-spacing:.1em; text-transform:uppercase; color: var(--ink-faint); font-weight:700; margin-bottom:6px; }
+.note-block ul{ margin:0; padding:0; list-style:none; display:flex; flex-direction:column; gap:5px; }
+.note-block li{ display:flex; gap:7px; font-size:13px; color: var(--ink-soft); line-height:1.4; }
+.note-block li svg{ width:13px; height:13px; flex-shrink:0; margin-top:3px; }
+.note-pros li svg{ color: var(--palm); }
+.note-cons li svg{ color: var(--clay); }
+
+.card-foot{ display:flex; align-items:center; justify-content:space-between; gap:10px; }
+.compare-pill{
+  display:inline-flex; align-items:center; gap:7px; padding:7px 13px; border-radius: var(--radius-pill);
+  border:1px solid var(--rule); background: var(--paper-sunk); font-size:12.5px; font-weight:600; color: var(--ink-soft);
+  transition: all var(--dur-fast) var(--ease);
+}
+.compare-pill svg{ width:13px; height:13px; }
+.compare-pill.is-on{ background: color-mix(in srgb, var(--ink) 92%, transparent); color: var(--paper); border-color: var(--ink); }
+.compare-pill.is-pulse{ animation: pulseWarn .5s var(--ease); }
+@keyframes pulseWarn{ 0%,100%{ box-shadow:none; } 40%{ box-shadow: 0 0 0 6px color-mix(in srgb, var(--clay) 24%, transparent); } }
+
+/* ---------- table / matrix ---------- */
+.table-wrap{ overflow-x:auto; border:1px solid var(--rule); border-radius: var(--radius-lg); background: var(--paper-raised); box-shadow: var(--shadow-sm); }
+table{ width:100%; border-collapse:collapse; min-width:820px; }
+thead th{ text-align:left; padding:14px 16px; border-bottom:1px solid var(--rule); background: var(--paper-sunk); position:sticky; top:0; }
+thead th button{
+  background:none; border:none; display:inline-flex; align-items:center; gap:6px; font-weight:700; font-size:11.5px;
+  letter-spacing:.08em; text-transform:uppercase; color: var(--ink-soft); padding:0;
+}
+thead th button svg{ width:11px; height:11px; opacity:0; transition: opacity var(--dur-fast) var(--ease), transform var(--dur-fast) var(--ease); }
+thead th button.is-sorted{ color: var(--ink); }
+thead th button.is-sorted svg{ opacity:1; }
+thead th button.dir-asc svg{ transform: rotate(180deg); }
+tbody td{ padding:14px 16px; border-bottom:1px solid var(--rule-soft); font-size:14px; vertical-align:middle; }
+tbody tr:last-child td{ border-bottom:none; }
+tbody tr:nth-child(even){ background: color-mix(in srgb, var(--paper-sunk) 45%, transparent); }
+tbody tr:hover{ background: var(--paper-sunk); }
+td.t-name{ font-family: var(--font-display); font-weight:600; font-size:15.5px; }
+td.t-rank{ color: var(--ink-faint); font-weight:600; width:44px; }
+td.t-num{ font-weight:600; }
+td.t-total{ font-family: var(--font-display); font-weight:700; font-size:16px; }
+.matrix-actions{ display:flex; align-items:center; gap:8px; justify-content:flex-end; }
+
+/* ---------- radar ---------- */
+.radar-layout{ display:grid; grid-template-columns: minmax(260px,340px) 1fr; gap:28px; align-items:center; }
+.radar-legend{ display:flex; flex-direction:column; gap:10px; }
+.legend-row{ display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius: var(--radius-md); background: var(--paper-sunk); }
+.legend-swatch{ width:12px; height:12px; border-radius:3px; flex-shrink:0; }
+.legend-name{ font-weight:700; font-size:13.5px; flex:1; }
+.legend-total{ font-family: var(--font-display); font-weight:600; font-size:14px; }
+.radar-caption{ font-size:12.5px; color: var(--ink-soft); margin-top:14px; }
+
+/* ---------- compare ---------- */
+.compare-empty{ font-size:14px; color: var(--ink-soft); padding:20px; text-align:center; background: var(--paper-sunk); border-radius: var(--radius-md); border:1px dashed var(--rule); }
+.compare-grid{ display:grid; grid-template-columns: repeat(auto-fit, minmax(220px,1fr)); gap:18px; }
+.compare-card{ border:1px solid var(--rule); border-radius: var(--radius-md); padding:18px; background: var(--paper-sunk); }
+.compare-card h3{ font-family: var(--font-display); font-size:19px; margin:0 0 10px; }
+.compare-row{ display:flex; justify-content:space-between; align-items:center; padding:7px 0; border-bottom:1px dashed var(--rule); font-size:13px; }
+.compare-row:last-of-type{ border-bottom:none; }
+.compare-row .lbl{ color: var(--ink-soft); }
+.compare-row .v{ font-weight:700; }
+.compare-row.is-winner .v{ color: var(--palm); }
+.compare-row.is-winner .v::after{ content:" ●"; font-size:8px; vertical-align:middle; }
+.compare-foot{ margin-top:14px; display:flex; justify-content:flex-end; }
+
+/* ---------- archive ---------- */
+.archive-list{ display:flex; flex-direction:column; gap:10px; }
+.archive-row{ display:flex; align-items:center; gap:14px; padding:12px 16px; border:1px solid var(--rule); border-radius: var(--radius-md); background: var(--paper-sunk); flex-wrap:wrap; }
+.archive-row .a-name{ font-family: var(--font-display); font-weight:600; font-size:15.5px; flex:1; min-width:140px; }
+.archive-row .a-scores{ font-size:12px; color: var(--ink-soft); }
+.archive-row .a-actions{ display:flex; gap:8px; margin-left:auto; }
+.archive-empty{ font-size:13.5px; color: var(--ink-soft); }
+
+/* ---------- modal ---------- */
+.modal-overlay{
+  position:fixed; inset:0; background: rgba(36,31,25,.4); backdrop-filter: blur(2px);
+  display:flex; align-items:center; justify-content:center; z-index:50; padding:20px;
+  opacity:0; pointer-events:none; transition: opacity var(--dur) var(--ease);
+}
+.modal-overlay.is-open{ opacity:1; pointer-events:auto; }
+.modal-panel{
+  background: var(--paper); border-radius: var(--radius-lg); border:1px solid var(--rule);
+  box-shadow: var(--shadow-lift); width:100%; max-width:520px; max-height:88vh; overflow-y:auto;
+  padding: 26px clamp(20px,3vw,32px) 28px; transform: translateY(14px) scale(.98); transition: transform var(--dur) var(--ease);
+}
+.modal-overlay.is-open .modal-panel{ transform: translateY(0) scale(1); }
+.modal-head{ display:flex; align-items:flex-start; justify-content:space-between; margin-bottom:18px; }
+.modal-head h2{ font-family: var(--font-display); font-size:24px; margin:0 0 4px; }
+.modal-head p{ font-size:13px; color: var(--ink-soft); margin:0; }
+.form-row{ margin-bottom:16px; }
+.form-row label{ display:block; font-size:12px; font-weight:700; letter-spacing:.03em; margin-bottom:6px; color: var(--ink-soft); }
+.form-row input[type=text], .form-row select, .form-row textarea{
+  width:100%; padding:11px 13px; border-radius: var(--radius-sm); border:1px solid var(--rule); background: var(--paper-raised);
+}
+.form-row input:focus, .form-row select:focus, .form-row textarea:focus{ border-color: var(--ink-faint); }
+.form-row textarea{ resize:vertical; min-height:64px; font-size:13.5px; }
+.form-grid4{ display:grid; grid-template-columns: repeat(4,1fr); gap:12px; }
+.form-grid4 .form-row{ margin-bottom:0; }
+.form-grid4 label{ font-size:11px; }
+.form-error{ font-size:12px; color: var(--clay); margin-top:5px; min-height:14px; }
+.modal-actions{ display:flex; justify-content:flex-end; gap:10px; margin-top:8px; }
+
+@media (max-width: 640px){
+  .modal-overlay{ align-items:flex-end; padding:0; }
+  .modal-panel{ max-width:none; border-radius: 20px 20px 0 0; max-height:92vh; animation: sheetUp var(--dur-slow) var(--ease); }
+  @keyframes sheetUp{ from{ transform: translateY(100%); } to{ transform: translateY(0); } }
+  .form-grid4{ grid-template-columns: repeat(2,1fr); }
+}
+
+/* ---------- footer ---------- */
+.colophon{ margin-top:40px; padding-top:22px; border-top:1px solid var(--rule); font-size:12.5px; color: var(--ink-faint); display:flex; justify-content:space-between; flex-wrap:wrap; gap:8px; }
+
+/* ---------- responsive ---------- */
+@media (max-width: 860px){
+  .radar-layout{ grid-template-columns: 1fr; }
+  .filterbar-actions{ margin-left:0; width:100%; justify-content:space-between; }
+}
+@media (max-width: 560px){
+  .panel{ padding:20px 16px; }
+  #gridView{ grid-template-columns: 1fr; }
+  .form-grid4{ grid-template-columns: repeat(2,1fr); }
+  .metric-row{ grid-template-columns: 18px 76px 1fr 30px; }
+}
+
+@media (prefers-reduced-motion: reduce){
+  *, *::before, *::after{ animation-duration: .001ms !important; animation-iteration-count:1 !important; transition-duration: .001ms !important; }
+}
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <filter id="grainFilter">
+    <feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="2" seed="7" stitchTiles="stitch" result="noise"/>
+    <feColorMatrix in="noise" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.05 0"/>
+  </filter>
+</svg>
+<div class="bg-grain" style="filter:url(#grainFilter)" aria-hidden="true"></div>
+
+<!-- icon sprite -->
+<svg style="display:none" aria-hidden="true">
+  <defs>
+    <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3 L19 6.2 V11.3 C19 15.9 16 19.3 12 21 C8 19.3 5 15.9 5 11.3 V6.2 Z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M8.7 12 L11 14.3 L15.3 9.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-book" viewBox="0 0 24 24"><path d="M3 6.5 C7 4.5 10 4.5 12 6.5 C14 4.5 17 4.5 21 6.5 V18 C17 16 14 16 12 18 C10 16 7 16 3 18 Z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M12 6.5 V18" fill="none" stroke="currentColor" stroke-width="1.6"/></symbol>
+    <symbol id="i-leaf" viewBox="0 0 24 24"><path d="M12 3 C6.5 5 4.3 11 6.3 17 C12.3 17.3 18 12.6 18 7 C16 5.4 14 4 12 3 Z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M7 16.5 C10 12.5 12.5 9 17 5.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></symbol>
+    <symbol id="i-compass" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M14.6 9.4 L12.6 12.6 L9.4 14.6 L11.4 11.4 Z" fill="currentColor"/></symbol>
+    <symbol id="i-search" viewBox="0 0 24 24"><circle cx="10.8" cy="10.8" r="6" fill="none" stroke="currentColor" stroke-width="1.6"/><line x1="15.3" y1="15.3" x2="20.5" y2="20.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></symbol>
+    <symbol id="i-plus" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><line x1="5" y1="12" x2="19" y2="12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+    <symbol id="i-archive" viewBox="0 0 24 24"><rect x="3.5" y="7.5" width="17" height="12" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M3.2 7.5 L5.5 4.3 H18.5 L20.8 7.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><line x1="10" y1="12.2" x2="14" y2="12.2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></symbol>
+    <symbol id="i-undo" viewBox="0 0 24 24"><path d="M9 5.5 L4.3 10.2 L9 14.9" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M4.3 10.2 H14 C17.6 10.2 19.8 13 18.3 16.4 C17 19.3 12.9 20.4 9.8 18.6" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></symbol>
+    <symbol id="i-x" viewBox="0 0 24 24"><line x1="6" y1="6" x2="18" y2="18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><line x1="18" y1="6" x2="6" y2="18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+    <symbol id="i-chevron" viewBox="0 0 24 24"><path d="M6 9 L12 15 L18 9" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-flag" viewBox="0 0 24 24"><line x1="6" y1="3.5" x2="6" y2="21" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><path d="M6 4.3 H17 L14.6 7.6 L17 10.9 H6" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></symbol>
+    <symbol id="i-trash" viewBox="0 0 24 24"><path d="M5 7.5 H19" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><path d="M9.5 7.5 V5.3 H14.5 V7.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M7.3 7.5 L8.2 20.2 H15.8 L16.7 7.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></symbol>
+    <symbol id="i-columns" viewBox="0 0 24 24"><rect x="3.3" y="4.5" width="7.8" height="15" rx="1.4" fill="none" stroke="currentColor" stroke-width="1.6"/><rect x="12.9" y="4.5" width="7.8" height="15" rx="1.4" fill="none" stroke="currentColor" stroke-width="1.6"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.5 L10 17.5 L19 6.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-mapdot" viewBox="0 0 24 24"><path d="M12 21 C8 16.8 5.5 13.2 5.5 9.8 C5.5 5.9 8.4 3 12 3 C15.6 3 18.5 5.9 18.5 9.8 C18.5 13.2 16 16.8 12 21 Z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><circle cx="12" cy="9.6" r="2.3" fill="none" stroke="currentColor" stroke-width="1.6"/></symbol>
+  </defs>
+</svg>
+
+<div class="app">
+
+  <div id="liveStatus" class="visually-hidden" aria-live="polite"></div>
+
+  <!-- ============ MASTHEAD ============ -->
+  <header class="masthead">
+    <div class="masthead-top">
+      <svg class="compass" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2">
+        <circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r=".6" fill="currentColor"/>
+        <path d="M12 2 L12 5 M12 19 L12 22 M2 12 L5 12 M19 12 L22 12" stroke-linecap="round"/>
+        <path d="M14.8 9.2 L12.9 12.9 L9.2 14.8 L11.1 11.1 Z" fill="currentColor" stroke="none"/>
+      </svg>
+      <span class="eyebrow">Field Almanac · Davao City, Philippines</span>
+    </div>
+    <h1>Finding <em>Ground</em></h1>
+    <p class="lede">Six barangays, surveyed against what your family actually needs — flood safety, schools, quiet, and reach. Adjust what matters most below and watch the ranking settle.</p>
+    <div class="masthead-stats">
+      <span><strong id="statActive">6</strong> active candidates</span>
+      <span class="dot">·</span>
+      <span><strong id="statFlagged">1</strong> flagged for risk</span>
+      <span class="dot">·</span>
+      <span><strong id="statArchived">0</strong> archived</span>
+      <span class="dot">·</span>
+      <span>Surveyed July 2026</span>
+    </div>
+  </header>
+
+  <!-- ============ WEIGHTING ENGINE ============ -->
+  <section class="panel">
+    <div class="panel-head">
+      <h2>What matters to your family</h2>
+      <span class="sub">Weights range 0.1× – 2.0×, applied live to every score below</span>
+    </div>
+    <div class="weights-grid">
+      <div class="weight-row" style="--accent: var(--c-safety)">
+        <div class="weight-label">
+          <span class="weight-icon"><svg><use href="#i-shield"/></svg></span>
+          <span class="weight-name">Flood Safety</span>
+          <span class="weight-val num" id="valSafety">1.0×</span>
+        </div>
+        <div class="range-wrap">
+          <input type="range" class="range" id="weightSafety" min="0.1" max="2" step="0.1" value="1" aria-label="Flood safety importance">
+        </div>
+        <div class="range-scale"><span>0.1×</span><span>2.0×</span></div>
+      </div>
+      <div class="weight-row" style="--accent: var(--c-schools)">
+        <div class="weight-label">
+          <span class="weight-icon"><svg><use href="#i-book"/></svg></span>
+          <span class="weight-name">School Access</span>
+          <span class="weight-val num" id="valSchools">1.0×</span>
+        </div>
+        <div class="range-wrap">
+          <input type="range" class="range" id="weightSchools" min="0.1" max="2" step="0.1" value="1" aria-label="School access importance">
+        </div>
+        <div class="range-scale"><span>0.1×</span><span>2.0×</span></div>
+      </div>
+      <div class="weight-row" style="--accent: var(--c-atmos)">
+        <div class="weight-label">
+          <span class="weight-icon"><svg><use href="#i-leaf"/></svg></span>
+          <span class="weight-name">Atmosphere &amp; Quiet</span>
+          <span class="weight-val num" id="valAtmosphere">1.0×</span>
+        </div>
+        <div class="range-wrap">
+          <input type="range" class="range" id="weightAtmosphere" min="0.1" max="2" step="0.1" value="1" aria-label="Atmosphere and quiet importance">
+        </div>
+        <div class="range-scale"><span>0.1×</span><span>2.0×</span></div>
+      </div>
+      <div class="weight-row" style="--accent: var(--c-access)">
+        <div class="weight-label">
+          <span class="weight-icon"><svg><use href="#i-compass"/></svg></span>
+          <span class="weight-name">Accessibility &amp; Logistics</span>
+          <span class="weight-val num" id="valAccess">1.0×</span>
+        </div>
+        <div class="range-wrap">
+          <input type="range" class="range" id="weightAccess" min="0.1" max="2" step="0.1" value="1" aria-label="Accessibility and logistics importance">
+        </div>
+        <div class="range-scale"><span>0.1×</span><span>2.0×</span></div>
+      </div>
+    </div>
+    <div class="weights-foot">
+      <button class="btn-text" id="btnResetWeights">↺ Reset weights to 1.0×</button>
+    </div>
+  </section>
+
+  <!-- ============ FILTER BAR ============ -->
+  <section class="panel">
+    <div class="filterbar">
+      <div class="field-search">
+        <svg><use href="#i-search"/></svg>
+        <input type="text" id="searchInput" placeholder="Search barangays…" aria-label="Search locations by name">
+      </div>
+      <div class="field-minsafety">
+        <label for="minSafetyRange">Min. flood safety</label>
+        <div class="range-wrap" style="--accent: var(--clay)">
+          <input type="range" class="range" id="minSafetyRange" min="1" max="10" step="0.5" value="1" style="--accent: var(--clay)" aria-label="Minimum flood safety threshold">
+        </div>
+        <span class="minsafety-val num" id="minSafetyVal">1.0</span>
+      </div>
+      <div class="segmented" role="group" aria-label="View mode">
+        <button id="btnViewGrid" class="is-active" aria-pressed="true"><svg><use href="#i-columns"/></svg>Grid</button>
+        <button id="btnViewMatrix" aria-pressed="false"><svg><use href="#i-chevron"/></svg>Matrix</button>
+      </div>
+      <div class="filterbar-actions">
+        <button class="btn btn-ghost" id="btnToggleArchive"><svg><use href="#i-archive"/></svg>Archive <span id="archiveCount">(0)</span></button>
+        <button class="btn btn-primary" id="btnAddLocation"><svg><use href="#i-plus"/></svg>Add Location</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ GRID VIEW ============ -->
+  <section id="gridView" aria-label="Location cards"></section>
+
+  <!-- ============ MATRIX VIEW ============ -->
+  <section id="matrixView" class="table-wrap" style="display:none">
+    <table>
+      <thead>
+        <tr>
+          <th>Rank</th>
+          <th><button data-sort="name">Barangay <svg><use href="#i-chevron"/></svg></button></th>
+          <th>Status</th>
+          <th><button data-sort="safety">Safety <svg><use href="#i-chevron"/></svg></button></th>
+          <th><button data-sort="schools">Schools <svg><use href="#i-chevron"/></svg></button></th>
+          <th><button data-sort="atmosphere">Atmosphere <svg><use href="#i-chevron"/></svg></button></th>
+          <th><button data-sort="access">Access <svg><use href="#i-chevron"/></svg></button></th>
+          <th><button data-sort="total" class="is-sorted dir-desc">Total <svg><use href="#i-chevron"/></svg></button></th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody id="matrixBody"></tbody>
+    </table>
+  </section>
+
+  <!-- ============ RADAR ============ -->
+  <section class="panel" id="radarSection">
+    <div class="kicker"><span>Field Comparison</span><span class="rule"></span></div>
+    <div class="radar-layout">
+      <svg id="radarSvg" viewBox="0 0 340 340"></svg>
+      <div>
+        <div class="radar-legend" id="radarLegend"></div>
+        <p class="radar-caption" id="radarCaption"></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ COMPARE ============ -->
+  <section class="panel" id="compareSection">
+    <div class="kicker"><span>Side-by-Side</span><span class="rule"></span></div>
+    <div id="compareBody"></div>
+  </section>
+
+  <!-- ============ ARCHIVE ============ -->
+  <section class="panel" id="archiveSection" style="display:none">
+    <div class="kicker"><span>Archived Locations</span><span class="rule"></span></div>
+    <div class="archive-list" id="archiveList"></div>
+  </section>
+
+  <footer class="colophon">
+    <span>Scores compiled from on-the-ground notes and community input, July 2026.</span>
+    <span>Your weights and edits are saved to this browser only.</span>
+  </footer>
+
+</div>
+
+<!-- ============ ADD LOCATION MODAL ============ -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal-panel" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal-head">
+      <div>
+        <h2 id="modalTitle">Survey a New Location</h2>
+        <p>Add a barangay or subdivision to your working list.</p>
+      </div>
+      <button class="btn-icon" id="btnModalClose" aria-label="Close"><svg><use href="#i-x"/></svg></button>
+    </div>
+    <form id="formAddLocation" novalidate>
+      <div class="form-row">
+        <label for="inputName">Location name</label>
+        <input type="text" id="inputName" maxlength="60" placeholder="e.g. Toril" required>
+        <div class="form-error" id="errName"></div>
+      </div>
+      <div class="form-grid4">
+        <div class="form-row">
+          <label for="inputSafety">Safety</label>
+          <input type="number" id="inputSafety" min="1" max="10" step="0.1" value="7.0">
+        </div>
+        <div class="form-row">
+          <label for="inputSchools">Schools</label>
+          <input type="number" id="inputSchools" min="1" max="10" step="0.1" value="7.0">
+        </div>
+        <div class="form-row">
+          <label for="inputAtmosphere">Atmosphere</label>
+          <input type="number" id="inputAtmosphere" min="1" max="10" step="0.1" value="7.0">
+        </div>
+        <div class="form-row">
+          <label for="inputAccess">Access</label>
+          <input type="number" id="inputAccess" min="1" max="10" step="0.1" value="7.0">
+        </div>
+      </div>
+      <div class="form-error" id="errScores" style="margin-top:6px"></div>
+      <div class="form-row" style="margin-top:14px">
+        <label for="inputPros">Pros (one per line)</label>
+        <textarea id="inputPros" placeholder="High ground, close to the highway…"></textarea>
+      </div>
+      <div class="form-row">
+        <label for="inputCons">Trade-offs (one per line)</label>
+        <textarea id="inputCons" placeholder="Farther from the airport…"></textarea>
+      </div>
+      <div class="form-row">
+        <label for="inputStatus">Status</label>
+        <select id="inputStatus">
+          <option value="Active">Active</option>
+          <option value="High Risk">High Risk</option>
+        </select>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-ghost" id="btnModalCancel">Cancel</button>
+        <button type="submit" class="btn btn-primary"><svg><use href="#i-check"/></svg>Save Location</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+(function(){
+'use strict';
+
+/* ===================== DATA ===================== */
+var STORAGE_KEY = 'davao-almanac.v1';
+var DEFAULT_WEIGHTS = { safety:1, schools:1, atmosphere:1, access:1 };
+
+var SEED = [
+  { id:'seed-buhangin', name:'Buhangin', safety:9.0, schools:9.0, atmosphere:8.0, access:9.5,
+    pros:['High terrain and rolling hills with minimal flood risk','Strategic proximity to the airport and SM Lanang'],
+    cons:['Higher price per square meter','Busier main thoroughfares'],
+    status:'Active', archived:false, seeded:true },
+  { id:'seed-communal', name:'Communal', safety:9.5, schools:8.5, atmosphere:9.0, access:8.5,
+    pros:['Elevated northern plateau','Quiet, low-density neighborhoods with spacious master-planned lots'],
+    cons:['Rapidly developing — commercial hubs still filling in'],
+    status:'Active', archived:false, seeded:true },
+  { id:'seed-mintal', name:'Mintal / Catalunan Grande', safety:9.0, schools:8.5, atmosphere:9.5, access:7.5,
+    pros:['High inland elevation near the mountain slopes with a cool climate','University-town feel around UP Mindanao'],
+    cons:['Slower commute into the downtown/airport core during peak traffic'],
+    status:'Active', archived:false, seeded:true },
+  { id:'seed-maa', name:'Ma-a', safety:7.5, schools:8.5, atmosphere:8.0, access:9.0,
+    pros:['Highly central position','Quick commute access both north and south'],
+    cons:['Elevated enclaves are safe, but low riverside sections flood','Peak-hour bottlenecks'],
+    status:'Active', archived:false, seeded:true },
+  { id:'seed-mandug', name:'Mandug', safety:7.0, schools:7.0, atmosphere:9.0, access:7.0,
+    pros:['Larger lot sizes at competitive prices','High space-to-cost ratio in a quiet countryside setting'],
+    cons:['Infrastructure and bypass access still developing'],
+    status:'Active', archived:false, seeded:true },
+  { id:'seed-talomo', name:'Talomo', safety:4.0, schools:8.0, atmosphere:8.5, access:8.0,
+    pros:['Lush greenery and cool coastal breeze','Established communities'],
+    cons:['High flood risk in low-lying basin / river-overflow zones','Strict elevation checks required before buying'],
+    status:'High Risk', archived:false, seeded:true },
+  { id:'seed-catalunan-grande', name:'Catalunan Grande', safety:9.0, schools:8.5, atmosphere:8.5, access:8.0,
+    pros:['Excellent elevation and flood safety above the coastal basin','Cool, breezy hillside setting with several established gated subdivisions'],
+    cons:['Catalunan Grande Road gets congested during peak school-commute hours'],
+    status:'Active', archived:false, seeded:true },
+  { id:'seed-matina-heights', name:'Matina Heights / Shrine Hills', safety:10.0, schools:9.5, atmosphere:8.5, access:9.0,
+    pros:['Elevated bluffs directly overlooking downtown Davao with essentially zero flood risk','Top-tier proximity to Ateneo de Davao High School, Precious International School, and major hospitals'],
+    cons:['Highly sought-after — higher price per square meter and limited open-lot availability'],
+    status:'Active', archived:false, seeded:true },
+  { id:'seed-indangan', name:'Indangan', safety:9.5, schools:7.5, atmosphere:9.0, access:7.5,
+    pros:['High natural elevation with strong flood safety on rolling northern hills','Notably lower lot prices than neighboring Buhangin, in a quiet suburban setting'],
+    cons:['Commercial infrastructure still catching up — routine errands mean a short drive to Buhangin or Lanang'],
+    status:'Active', archived:false, seeded:true },
+  { id:'seed-cabantian', name:'Cabantian (Upper)', safety:8.0, schools:7.5, atmosphere:7.5, access:9.0,
+    pros:['Direct access to the airport and northern bypass roads','Abundant gated subdivision options in the elevated sections'],
+    cons:['Elevation varies sharply block-to-block — lower Cabantian floods while upper Cabantian stays dry, so verify elevation maps before buying'],
+    status:'Active', archived:false, seeded:true },
+  { id:'seed-tacunan', name:'Tacunan', safety:10.0, schools:7.0, atmosphere:9.5, access:7.0,
+    pros:['High altitude with cool mountain breezes and exceptionally clean air','Zero flood risk — well suited to custom estates or homestead-style builds'],
+    cons:['45–60 minute commute into central Davao depending on highway traffic'],
+    status:'Active', archived:false, seeded:true },
+  { id:'seed-toril', name:'Toril', safety:8.5, schools:8.5, atmosphere:8.5, access:7.5,
+    pros:['Self-contained district with its own malls, hospitals, and private schools','Near eco-resorts and mountain destinations like Eden Nature Park'],
+    cons:["Davao City's southernmost major district — farthest from the airport"],
+    status:'Active', archived:false, seeded:true },
+  { id:'seed-panabo', name:'Panabo City', safety:8.5, schools:7.5, atmosphere:8.5, access:8.0,
+    pros:['High-growth area with competitive land prices','Easy drive to the airport via the northern highway with less dense traffic'],
+    cons:['Across the regional boundary into Davao del Norte — daily commuting into central Davao means highway travel'],
+    status:'Active', archived:false, seeded:true },
+  { id:'seed-tigatto', name:'Tigatto (Upper Terraces)', safety:7.5, schools:7.5, atmosphere:8.0, access:8.5,
+    pros:['Minutes from NCCC Mall Ma-a and the central business district','Elevated plots offer sweeping views of the river valley'],
+    cons:['Riverside subdivisions like Jade Valley flood heavily — stick strictly to hilltop or high-ridge developments'],
+    status:'Active', archived:false, seeded:true },
+  { id:'seed-bago-gallera', name:'Bago Gallera', safety:6.5, schools:7.5, atmosphere:6.5, access:8.5,
+    pros:['Strong highway connectivity heading north or south','Growing selection of mid-to-high-end gated communities'],
+    cons:['Elevation varies like neighboring Talomo — favor higher inland ridges over low-lying creek basins'],
+    status:'Active', archived:false, seeded:true },
+  { id:'seed-santa-cruz', name:'Santa Cruz', safety:7.5, schools:5.5, atmosphere:9.0, access:5.0,
+    pros:['Outstanding lot sizes at a fraction of Davao City land prices','Close to mountain trails and beach resorts at the base of Mount Apo'],
+    cons:['A separate municipality outside Davao City — better suited to a quieter, semi-retired lifestyle than daily city commuting'],
+    status:'Active', archived:false, seeded:true }
+];
+
+var CRITERIA = [
+  { key:'safety', label:'Flood Safety', icon:'i-shield', color:'var(--c-safety)' },
+  { key:'schools', label:'School Access', icon:'i-book', color:'var(--c-schools)' },
+  { key:'atmosphere', label:'Atmosphere', icon:'i-leaf', color:'var(--c-atmos)' },
+  { key:'access', label:'Accessibility', icon:'i-compass', color:'var(--c-access)' }
+];
+
+var RADAR_COLORS = ['#3D7355', '#BC5B3E', '#C4882B', '#4F7186', '#86577A', '#7C8F4E'];
+
+/* ===================== STATE ===================== */
+var state = {
+  locations: [],
+  weights: Object.assign({}, DEFAULT_WEIGHTS),
+  view: 'grid',
+  search: '',
+  minSafety: 1,
+  sort: { key:'total', dir:'desc' },
+  compare: new Set(),
+  showArchived: false,
+  pendingDelete: null
+};
+
+/* ===================== HELPERS ===================== */
+function clone(o){ return JSON.parse(JSON.stringify(o)); }
+function clamp(n, lo, hi){ return Math.min(hi, Math.max(lo, n)); }
+function fmt1(n){ return (Math.round(n*10)/10).toFixed(1); }
+function makeId(){ return 'loc-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2,7); }
+function escapeHtml(s){
+  return String(s).replace(/[&<>"']/g, function(c){
+    return { '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c];
+  });
+}
+function tier(score){
+  if(score >= 8.5) return 'palm';
+  if(score >= 7.0) return 'sun';
+  return 'clay';
+}
+function tierVar(t){ return t==='palm' ? 'var(--palm)' : (t==='sun' ? 'var(--sun)' : 'var(--clay)'); }
+
+function computeTotal(loc, w){
+  return loc.safety*w.safety + loc.schools*w.schools + loc.atmosphere*w.atmosphere + loc.access*w.access;
+}
+function currentMax(w){
+  return 10 * (w.safety + w.schools + w.atmosphere + w.access);
+}
+
+/* ===================== PERSISTENCE ===================== */
+function loadState(){
+  var weights = Object.assign({}, DEFAULT_WEIGHTS);
+  var locations = clone(SEED);
+  try{
+    var raw = localStorage.getItem(STORAGE_KEY);
+    if(raw){
+      var parsed = JSON.parse(raw);
+      if(parsed && typeof parsed === 'object'){
+        if(parsed.weights && typeof parsed.weights === 'object'){
+          CRITERIA.forEach(function(c){
+            var v = parseFloat(parsed.weights[c.key]);
+            if(!isNaN(v) && v >= 0.1 && v <= 2) weights[c.key] = v;
+          });
+        }
+        if(Array.isArray(parsed.locations) && parsed.locations.length){
+          var valid = parsed.locations.filter(function(l){
+            return l && typeof l.name === 'string' && l.name.trim().length > 0
+              && ['safety','schools','atmosphere','access'].every(function(k){
+                var n = parseFloat(l[k]); return !isNaN(n) && n >= 1 && n <= 10;
+              });
+          }).map(function(l){
+            return {
+              id: l.id || makeId(),
+              name: l.name.trim(),
+              safety: clamp(parseFloat(l.safety),1,10),
+              schools: clamp(parseFloat(l.schools),1,10),
+              atmosphere: clamp(parseFloat(l.atmosphere),1,10),
+              access: clamp(parseFloat(l.access),1,10),
+              pros: Array.isArray(l.pros) ? l.pros.filter(Boolean) : [],
+              cons: Array.isArray(l.cons) ? l.cons.filter(Boolean) : [],
+              status: l.status === 'High Risk' ? 'High Risk' : 'Active',
+              archived: !!l.archived,
+              seeded: !!l.seeded
+            };
+          });
+          if(valid.length) locations = valid;
+        }
+      }
+    }
+  }catch(e){ /* corrupt storage — fall back to seed defaults */ }
+  reconcileSeed(locations);
+  return { weights: weights, locations: locations };
+}
+
+// Appends any canonical SEED entries (by id) missing from a previously-saved
+// locations list, so newly-added almanac locations reach users with older
+// localStorage state without disturbing their archived items or custom edits.
+function reconcileSeed(locations){
+  var existingIds = {};
+  locations.forEach(function(l){ existingIds[l.id] = true; });
+  SEED.forEach(function(seedLoc){
+    if(!existingIds[seedLoc.id]) locations.push(clone(seedLoc));
+  });
+}
+
+function saveState(){
+  try{
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({
+      weights: state.weights,
+      locations: state.locations
+    }));
+  }catch(e){ /* storage unavailable — proceed silently, in-memory state still works */ }
+}
+
+/* ===================== SELECTORS ===================== */
+function getActive(){ return state.locations.filter(function(l){ return !l.archived; }); }
+function getFiltered(){
+  var q = state.search.trim().toLowerCase();
+  return getActive().filter(function(l){
+    var matchesSearch = !q || l.name.toLowerCase().indexOf(q) !== -1;
+    var matchesSafety = l.safety >= state.minSafety;
+    return matchesSearch && matchesSafety;
+  });
+}
+function withTotals(list){
+  return list.map(function(l){
+    var total = computeTotal(l, state.weights);
+    return Object.assign({}, l, { total: total });
+  });
+}
+function computeRanks(list){
+  var ranked = withTotals(list).slice().sort(function(a,b){ return b.total - a.total || a.name.localeCompare(b.name); });
+  var map = {};
+  ranked.forEach(function(l, i){ map[l.id] = i+1; });
+  return map;
+}
+function sortList(list, sort){
+  var dir = sort.dir === 'asc' ? 1 : -1;
+  return list.slice().sort(function(a,b){
+    var av = sort.key === 'name' ? a.name.toLowerCase() : a[sort.key];
+    var bv = sort.key === 'name' ? b.name.toLowerCase() : b[sort.key];
+    if(av < bv) return -1*dir;
+    if(av > bv) return 1*dir;
+    return a.name.localeCompare(b.name);
+  });
+}
+
+/* ===================== DOM REFS ===================== */
+var $ = function(sel){ return document.querySelector(sel); };
+var gridView = $('#gridView');
+var matrixBody = $('#matrixBody');
+var radarSvg = $('#radarSvg');
+var radarLegend = $('#radarLegend');
+var radarCaption = $('#radarCaption');
+var compareBody = $('#compareBody');
+var archiveList = $('#archiveList');
+var liveStatus = $('#liveStatus');
+
+/* ===================== RENDER: cards ===================== */
+function metricRowHtml(loc, key, label, icon){
+  var score = loc[key];
+  var t = tier(score);
+  var pct = clamp((score-1)/9*100, 0, 100);
+  return '' +
+    '<div class="metric-row">' +
+      '<svg class="m-icon" style="color:'+tierVar(t)+'"><use href="#'+icon+'"/></svg>' +
+      '<span class="m-name">'+label+'</span>' +
+      '<span class="m-bar"><span class="fill" style="width:'+pct+'%; background:'+tierVar(t)+'"></span><span class="ticks"><span></span><span></span><span></span><span></span><span></span></span></span>' +
+      '<span class="m-val num">'+fmt1(score)+'</span>' +
+    '</div>';
+}
+
+function dialHtml(total, max, rank){
+  var pct = max > 0 ? clamp(total/max, 0, 1) : 0;
+  var r = 28, c = 2*Math.PI*r;
+  var offset = c * (1 - pct);
+  var t = tier((total/max)*10);
+  return '' +
+    '<div class="card-dial">' +
+      '<svg viewBox="0 0 68 68">' +
+        '<circle class="track" cx="34" cy="34" r="'+r+'"/>' +
+        '<circle class="prog" cx="34" cy="34" r="'+r+'" stroke="'+tierVar(t)+'" stroke-dasharray="'+c+'" stroke-dashoffset="'+offset+'"/>' +
+      '</svg>' +
+      '<div class="val"><span class="n num">'+fmt1(total)+'</span><span class="d num">of '+fmt1(max)+'</span></div>' +
+    '</div>';
+}
+
+function notesHtml(items, cls, icon){
+  if(!items.length) return '';
+  return '<ul class="'+cls+'">' + items.map(function(i){
+    return '<li><svg><use href="#'+icon+'"/></svg><span>'+escapeHtml(i)+'</span></li>';
+  }).join('') + '</ul>';
+}
+
+function cardHtml(loc, rank, isLeading, delayIdx){
+  var max = currentMax(state.weights);
+  var statusTag = loc.status === 'High Risk'
+    ? '<span class="tag tag-risk"><svg><use href="#i-flag"/></svg>High Risk</span>'
+    : '<span class="tag tag-active"><svg><use href="#i-check"/></svg>Active</span>';
+  var isComparing = state.compare.has(loc.id);
+  return '' +
+    '<article class="card'+(isLeading?' is-leading':'')+'" style="animation-delay:'+(delayIdx*45)+'ms" data-id="'+loc.id+'">' +
+      '<div class="card-top">' +
+        '<div class="rank-badge"><span class="n num">'+rank+'</span><span class="lbl">Rank</span></div>' +
+        dialHtml(loc.total, max, rank) +
+      '</div>' +
+      '<div>' + statusTag + '</div>' +
+      '<h3 class="card-name">'+escapeHtml(loc.name)+'</h3>' +
+      '<div class="metric-list">' +
+        metricRowHtml(loc,'safety','Flood Safety','i-shield') +
+        metricRowHtml(loc,'schools','Schools','i-book') +
+        metricRowHtml(loc,'atmosphere','Atmosphere','i-leaf') +
+        metricRowHtml(loc,'access','Access','i-compass') +
+      '</div>' +
+      '<div class="card-notes">' +
+        (loc.pros.length ? '<div class="note-block"><div class="note-label">What works</div>'+notesHtml(loc.pros,'note-pros','i-check')+'</div>' : '') +
+        (loc.cons.length ? '<div class="note-block"><div class="note-label">Trade-offs</div>'+notesHtml(loc.cons,'note-cons','i-flag')+'</div>' : '') +
+      '</div>' +
+      '<div class="card-foot">' +
+        '<button class="compare-pill'+(isComparing?' is-on':'')+'" data-action="compare" data-id="'+loc.id+'"><svg><use href="#i-columns"/></svg>'+(isComparing?'Comparing':'Compare')+'</button>' +
+        '<button class="btn-icon" data-action="archive" data-id="'+loc.id+'" title="Archive '+escapeHtml(loc.name)+'" aria-label="Archive '+escapeHtml(loc.name)+'"><svg><use href="#i-archive"/></svg></button>' +
+      '</div>' +
+    '</article>';
+}
+
+function matrixRowHtml(loc, rank){
+  var isComparing = state.compare.has(loc.id);
+  var statusTag = loc.status === 'High Risk'
+    ? '<span class="tag tag-risk"><svg><use href="#i-flag"/></svg>Risk</span>'
+    : '<span class="tag tag-active"><svg><use href="#i-check"/></svg>Active</span>';
+  return '' +
+    '<tr data-id="'+loc.id+'">' +
+      '<td class="t-rank num">'+rank+'</td>' +
+      '<td class="t-name">'+escapeHtml(loc.name)+'</td>' +
+      '<td>'+statusTag+'</td>' +
+      '<td class="t-num num">'+fmt1(loc.safety)+'</td>' +
+      '<td class="t-num num">'+fmt1(loc.schools)+'</td>' +
+      '<td class="t-num num">'+fmt1(loc.atmosphere)+'</td>' +
+      '<td class="t-num num">'+fmt1(loc.access)+'</td>' +
+      '<td class="t-total num">'+fmt1(loc.total)+'</td>' +
+      '<td><div class="matrix-actions">' +
+        '<button class="btn-icon" data-action="compare" data-id="'+loc.id+'" title="Compare" aria-label="Toggle compare" style="'+(isComparing?'color:var(--palm);border-color:var(--palm)':'')+'"><svg><use href="#i-columns"/></svg></button>' +
+        '<button class="btn-icon" data-action="archive" data-id="'+loc.id+'" title="Archive" aria-label="Archive '+escapeHtml(loc.name)+'"><svg><use href="#i-archive"/></svg></button>' +
+      '</div></td>' +
+    '</tr>';
+}
+
+/* ===================== RENDER: radar ===================== */
+function polar(cx, cy, r, angleDeg){
+  var a = (angleDeg - 90) * Math.PI/180;
+  return { x: cx + r*Math.cos(a), y: cy + r*Math.sin(a) };
+}
+function renderRadar(list){
+  var cx=150, cy=150, R=110;
+  var angles = [0, 90, 180, 270];
+  var parts = [];
+
+  // ring grid
+  [0.2,0.4,0.6,0.8,1.0].forEach(function(f){
+    var pts = angles.map(function(a){ var p = polar(cx,cy,R*f,a); return p.x+','+p.y; }).join(' ');
+    parts.push('<polygon points="'+pts+'" fill="none" stroke="var(--rule)" stroke-width="1"/>');
+  });
+  // spokes
+  angles.forEach(function(a){
+    var p = polar(cx,cy,R,a);
+    parts.push('<line x1="'+cx+'" y1="'+cy+'" x2="'+p.x+'" y2="'+p.y+'" stroke="var(--rule)" stroke-width="1"/>');
+  });
+  // axis labels
+  CRITERIA.forEach(function(c, i){
+    var p = polar(cx,cy,R+26,angles[i]);
+    parts.push('<text x="'+p.x+'" y="'+p.y+'" text-anchor="middle" dominant-baseline="middle" font-size="11.5" font-family="Hanken Grotesk, sans-serif" font-weight="700" fill="var(--ink-soft)">'+c.label+'</text>');
+  });
+
+  // series
+  list.forEach(function(loc, idx){
+    var color = RADAR_COLORS[idx % RADAR_COLORS.length];
+    var pts = CRITERIA.map(function(c, i){
+      var r = R * clamp(loc[c.key]/10, 0, 1);
+      var p = polar(cx,cy,r,angles[i]);
+      return p;
+    });
+    var ptStr = pts.map(function(p){ return p.x+','+p.y; }).join(' ');
+    parts.push('<polygon points="'+ptStr+'" fill="'+color+'" fill-opacity="0.12" stroke="'+color+'" stroke-width="2" style="transition: all '+ '320ms' +' ease"/>');
+    pts.forEach(function(p){
+      parts.push('<circle cx="'+p.x+'" cy="'+p.y+'" r="3.4" fill="'+color+'" stroke="var(--paper)" stroke-width="1.2"/>');
+    });
+  });
+
+  radarSvg.innerHTML = parts.join('');
+
+  radarLegend.innerHTML = list.map(function(loc, idx){
+    var color = RADAR_COLORS[idx % RADAR_COLORS.length];
+    return '<div class="legend-row"><span class="legend-swatch" style="background:'+color+'"></span><span class="legend-name">'+escapeHtml(loc.name)+'</span><span class="legend-total num">'+fmt1(loc.total)+'</span></div>';
+  }).join('') || '<div class="compare-empty">No locations to compare.</div>';
+
+  radarCaption.textContent = state.compare.size >= 2
+    ? 'Comparing your '+list.length+' selected location'+(list.length===1?'':'s')+' — raw scores, unweighted.'
+    : 'Showing your current top '+list.length+' by weighted total — raw scores, unweighted.';
+}
+
+/* ===================== RENDER: compare ===================== */
+function renderCompare(allFiltered){
+  var selected = allFiltered.filter(function(l){ return state.compare.has(l.id); });
+  if(selected.length < 2){
+    compareBody.innerHTML = '<div class="compare-empty">Select 2–3 locations (use the “Compare” button on a card or row) to see them side-by-side.</div>';
+    return selected;
+  }
+  var bestOf = {};
+  CRITERIA.forEach(function(c){
+    bestOf[c.key] = Math.max.apply(null, selected.map(function(l){ return l[c.key]; }));
+  });
+  var bestTotal = Math.max.apply(null, selected.map(function(l){ return l.total; }));
+
+  var cards = selected.map(function(loc){
+    var rows = CRITERIA.map(function(c){
+      var isWin = loc[c.key] === bestOf[c.key];
+      return '<div class="compare-row'+(isWin?' is-winner':'')+'"><span class="lbl">'+c.label+'</span><span class="v num">'+fmt1(loc[c.key])+'</span></div>';
+    }).join('');
+    var totalWin = loc.total === bestTotal;
+    return '' +
+      '<div class="compare-card">' +
+        '<h3>'+escapeHtml(loc.name)+'</h3>' +
+        rows +
+        '<div class="compare-row'+(totalWin?' is-winner':'')+'" style="border-top:1px solid var(--rule); margin-top:6px; padding-top:10px"><span class="lbl">Weighted Total</span><span class="v num">'+fmt1(loc.total)+'</span></div>' +
+      '</div>';
+  }).join('');
+
+  compareBody.innerHTML = '<div class="compare-grid">'+cards+'</div>' +
+    '<div class="compare-foot"><button class="btn-text" id="btnClearCompare">Clear comparison</button></div>';
+
+  var clearBtn = document.getElementById('btnClearCompare');
+  if(clearBtn) clearBtn.addEventListener('click', function(){
+    state.compare.clear();
+    renderDynamic();
+  });
+
+  return selected;
+}
+
+/* ===================== RENDER: archive ===================== */
+function renderArchive(){
+  var archived = state.locations.filter(function(l){ return l.archived; });
+  if(!archived.length){
+    archiveList.innerHTML = '<p class="archive-empty">Nothing archived yet — dropped locations will appear here.</p>';
+    return;
+  }
+  archiveList.innerHTML = archived.map(function(loc){
+    var pendingThis = state.pendingDelete === loc.id;
+    return '' +
+      '<div class="archive-row" data-id="'+loc.id+'">' +
+        '<span class="a-name">'+escapeHtml(loc.name)+'</span>' +
+        '<span class="a-scores num">S '+fmt1(loc.safety)+' · Sc '+fmt1(loc.schools)+' · At '+fmt1(loc.atmosphere)+' · Ac '+fmt1(loc.access)+'</span>' +
+        '<span class="a-actions">' +
+          '<button class="btn btn-ghost" data-action="restore" data-id="'+loc.id+'"><svg><use href="#i-undo"/></svg>Restore</button>' +
+          '<button class="btn btn-ghost'+(pendingThis?' btn-danger-step':'')+'" data-action="delete" data-id="'+loc.id+'"><svg><use href="#i-trash"/></svg>'+(pendingThis?'Confirm delete?':'Delete')+'</button>' +
+        '</span>' +
+      '</div>';
+  }).join('');
+}
+
+/* ===================== MASTER RENDER ===================== */
+function renderDynamic(){
+  var active = getActive();
+  var filtered = getFiltered();
+  var rankMap = computeRanks(filtered);
+  var withT = withTotals(filtered);
+
+  // grid
+  var gridSorted = withT.slice().sort(function(a,b){ return rankMap[a.id]-rankMap[b.id]; });
+  if(!gridSorted.length){
+    gridView.innerHTML = '<div class="compare-empty" style="grid-column:1/-1">No locations match your filters. Try widening the search or lowering the safety threshold.</div>';
+  } else {
+    gridView.innerHTML = gridSorted.map(function(loc, i){
+      return cardHtml(loc, rankMap[loc.id], rankMap[loc.id]===1, i);
+    }).join('');
+  }
+
+  // matrix
+  var matrixSorted = sortList(withT, state.sort);
+  matrixBody.innerHTML = matrixSorted.length
+    ? matrixSorted.map(function(loc){ return matrixRowHtml(loc, rankMap[loc.id]); }).join('')
+    : '<tr><td colspan="9" style="text-align:center; color:var(--ink-soft); padding:28px">No locations match your filters.</td></tr>';
+
+  // radar: compare selection if >=2, else top 3
+  var radarSource = withT.filter(function(l){ return state.compare.has(l.id); });
+  if(radarSource.length < 2){
+    radarSource = withT.slice().sort(function(a,b){ return b.total-a.total; }).slice(0,3);
+  } else {
+    radarSource = radarSource.slice(0,3);
+  }
+  renderRadar(radarSource);
+
+  // compare
+  renderCompare(withT);
+
+  // archive
+  renderArchive();
+
+  // header stats
+  document.getElementById('statActive').textContent = active.length;
+  document.getElementById('statFlagged').textContent = active.filter(function(l){ return l.status==='High Risk'; }).length;
+  document.getElementById('statArchived').textContent = state.locations.filter(function(l){ return l.archived; }).length;
+  document.getElementById('archiveCount').textContent = '(' + state.locations.filter(function(l){ return l.archived; }).length + ')';
+
+  liveStatus.textContent = 'Showing '+filtered.length+' of '+active.length+' active locations, sorted by '+state.sort.key+' '+state.sort.dir+'ending.';
+}
+
+/* ===================== EVENTS: weights ===================== */
+function pctForWeight(v){ return ((v-0.1)/(2-0.1))*100; }
+function wireWeightSlider(id, key, labelId){
+  var el = document.getElementById(id);
+  var label = document.getElementById(labelId);
+  function sync(){
+    el.style.setProperty('--pct', pctForWeight(parseFloat(el.value))+'%');
+    label.textContent = parseFloat(el.value).toFixed(1) + '×';
+  }
+  el.addEventListener('input', function(){
+    state.weights[key] = parseFloat(el.value);
+    sync();
+    saveState();
+    renderDynamic();
+  });
+  sync();
+}
+
+function applyWeightsToInputs(){
+  ['safety','schools','atmosphere','access'].forEach(function(key){
+    var idMap = { safety:'weightSafety', schools:'weightSchools', atmosphere:'weightAtmosphere', access:'weightAccess' };
+    var labMap = { safety:'valSafety', schools:'valSchools', atmosphere:'valAtmosphere', access:'valAccess' };
+    var el = document.getElementById(idMap[key]);
+    var lab = document.getElementById(labMap[key]);
+    el.value = state.weights[key];
+    el.style.setProperty('--pct', pctForWeight(state.weights[key])+'%');
+    lab.textContent = state.weights[key].toFixed(1) + '×';
+  });
+}
+
+/* ===================== EVENTS: filter bar ===================== */
+function wireFilterBar(){
+  document.getElementById('searchInput').addEventListener('input', function(e){
+    state.search = e.target.value;
+    renderDynamic();
+  });
+
+  var minSafetyEl = document.getElementById('minSafetyRange');
+  var minSafetyVal = document.getElementById('minSafetyVal');
+  function syncMinSafety(){
+    minSafetyEl.style.setProperty('--pct', ((parseFloat(minSafetyEl.value)-1)/(10-1))*100+'%');
+    minSafetyVal.textContent = parseFloat(minSafetyEl.value).toFixed(1);
+  }
+  minSafetyEl.addEventListener('input', function(){
+    state.minSafety = parseFloat(minSafetyEl.value);
+    syncMinSafety();
+    renderDynamic();
+  });
+  syncMinSafety();
+
+  var btnGrid = document.getElementById('btnViewGrid');
+  var btnMatrix = document.getElementById('btnViewMatrix');
+  function setView(v){
+    state.view = v;
+    var gridOn = v === 'grid';
+    btnGrid.classList.toggle('is-active', gridOn);
+    btnMatrix.classList.toggle('is-active', !gridOn);
+    btnGrid.setAttribute('aria-pressed', String(gridOn));
+    btnMatrix.setAttribute('aria-pressed', String(!gridOn));
+    document.getElementById('gridView').style.display = gridOn ? 'grid' : 'none';
+    document.getElementById('matrixView').style.display = gridOn ? 'none' : 'block';
+  }
+  btnGrid.addEventListener('click', function(){ setView('grid'); });
+  btnMatrix.addEventListener('click', function(){ setView('matrix'); });
+
+  document.getElementById('btnToggleArchive').addEventListener('click', function(){
+    state.showArchived = !state.showArchived;
+    document.getElementById('archiveSection').style.display = state.showArchived ? 'block' : 'none';
+    if(state.showArchived) document.getElementById('archiveSection').scrollIntoView({ behavior: prefersMotion()?'smooth':'auto', block:'nearest' });
+  });
+}
+
+function prefersMotion(){
+  return !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+}
+
+/* ===================== EVENTS: sort ===================== */
+function wireSort(){
+  var buttons = document.querySelectorAll('[data-sort]');
+  buttons.forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var key = btn.getAttribute('data-sort');
+      if(state.sort.key === key){
+        state.sort.dir = state.sort.dir === 'asc' ? 'desc' : 'asc';
+      } else {
+        state.sort.key = key;
+        state.sort.dir = key === 'name' ? 'asc' : 'desc';
+      }
+      buttons.forEach(function(b){
+        b.classList.remove('is-sorted','dir-asc','dir-desc');
+      });
+      btn.classList.add('is-sorted', 'dir-'+state.sort.dir);
+      buttons.forEach(function(b){ b.setAttribute('aria-sort', 'none'); });
+      btn.closest('th').setAttribute('aria-sort', state.sort.dir === 'asc' ? 'ascending' : 'descending');
+      renderDynamic();
+    });
+  });
+}
+
+/* ===================== EVENTS: delegated actions ===================== */
+function toggleCompare(id, triggerEl){
+  if(state.compare.has(id)){
+    state.compare.delete(id);
+  } else {
+    if(state.compare.size >= 3){
+      if(triggerEl){
+        triggerEl.classList.add('is-pulse');
+        setTimeout(function(){ triggerEl.classList.remove('is-pulse'); }, 500);
+      }
+      return;
+    }
+    state.compare.add(id);
+  }
+  renderDynamic();
+}
+
+function wireDelegatedActions(container){
+  container.addEventListener('click', function(e){
+    var btn = e.target.closest('[data-action]');
+    if(!btn) return;
+    var action = btn.getAttribute('data-action');
+    var id = btn.getAttribute('data-id');
+
+    if(action === 'archive'){
+      var loc = state.locations.find(function(l){ return l.id === id; });
+      if(loc){
+        loc.archived = true;
+        state.compare.delete(id);
+        saveState();
+        renderDynamic();
+      }
+    } else if(action === 'compare'){
+      toggleCompare(id, btn);
+    } else if(action === 'restore'){
+      var rloc = state.locations.find(function(l){ return l.id === id; });
+      if(rloc){
+        rloc.archived = false;
+        saveState();
+        renderDynamic();
+      }
+    } else if(action === 'delete'){
+      if(state.pendingDelete === id){
+        state.locations = state.locations.filter(function(l){ return l.id !== id; });
+        state.pendingDelete = null;
+        saveState();
+        renderDynamic();
+      } else {
+        state.pendingDelete = id;
+        renderDynamic();
+        setTimeout(function(){
+          if(state.pendingDelete === id){
+            state.pendingDelete = null;
+            renderArchive();
+          }
+        }, 4000);
+      }
+    }
+  });
+}
+
+/* ===================== MODAL ===================== */
+var modalOverlay = document.getElementById('modalOverlay');
+var modalTrigger = document.getElementById('btnAddLocation');
+var lastFocused = null;
+
+function openModal(){
+  lastFocused = document.activeElement;
+  modalOverlay.classList.add('is-open');
+  document.getElementById('formAddLocation').reset();
+  document.getElementById('errName').textContent = '';
+  document.getElementById('errScores').textContent = '';
+  setTimeout(function(){ document.getElementById('inputName').focus(); }, 50);
+  document.addEventListener('keydown', onModalKeydown);
+}
+function closeModal(){
+  modalOverlay.classList.remove('is-open');
+  document.removeEventListener('keydown', onModalKeydown);
+  if(lastFocused) lastFocused.focus();
+}
+function onModalKeydown(e){
+  if(e.key === 'Escape'){ closeModal(); return; }
+  if(e.key === 'Tab'){
+    var focusables = modalOverlay.querySelectorAll('input, select, textarea, button');
+    if(!focusables.length) return;
+    var first = focusables[0], last = focusables[focusables.length-1];
+    if(e.shiftKey && document.activeElement === first){
+      e.preventDefault(); last.focus();
+    } else if(!e.shiftKey && document.activeElement === last){
+      e.preventDefault(); first.focus();
+    }
+  }
+}
+modalTrigger.addEventListener('click', openModal);
+document.getElementById('btnModalClose').addEventListener('click', closeModal);
+document.getElementById('btnModalCancel').addEventListener('click', closeModal);
+modalOverlay.addEventListener('click', function(e){ if(e.target === modalOverlay) closeModal(); });
+
+document.getElementById('formAddLocation').addEventListener('submit', function(e){
+  e.preventDefault();
+  var name = document.getElementById('inputName').value.trim();
+  var errName = document.getElementById('errName');
+  var errScores = document.getElementById('errScores');
+  errName.textContent = '';
+  errScores.textContent = '';
+
+  if(!name){
+    errName.textContent = 'Please enter a location name.';
+    document.getElementById('inputName').focus();
+    return;
+  }
+
+  var fields = ['inputSafety','inputSchools','inputAtmosphere','inputAccess'];
+  var values = {};
+  var invalid = false;
+  fields.forEach(function(fid){
+    var v = parseFloat(document.getElementById(fid).value);
+    if(isNaN(v)) invalid = true;
+    values[fid] = clamp(isNaN(v) ? 5 : v, 1, 10);
+  });
+  if(invalid){
+    errScores.textContent = 'All four scores must be numbers between 1.0 and 10.0.';
+    return;
+  }
+
+  var pros = document.getElementById('inputPros').value.split('\n').map(function(s){ return s.trim(); }).filter(Boolean);
+  var cons = document.getElementById('inputCons').value.split('\n').map(function(s){ return s.trim(); }).filter(Boolean);
+  var status = document.getElementById('inputStatus').value;
+
+  state.locations.push({
+    id: makeId(),
+    name: name,
+    safety: values.inputSafety,
+    schools: values.inputSchools,
+    atmosphere: values.inputAtmosphere,
+    access: values.inputAccess,
+    pros: pros,
+    cons: cons,
+    status: status,
+    archived: false,
+    seeded: false
+  });
+
+  saveState();
+  closeModal();
+  renderDynamic();
+});
+
+/* ===================== RESET WEIGHTS ===================== */
+document.getElementById('btnResetWeights').addEventListener('click', function(){
+  state.weights = Object.assign({}, DEFAULT_WEIGHTS);
+  applyWeightsToInputs();
+  saveState();
+  renderDynamic();
+});
+
+/* ===================== INIT ===================== */
+function init(){
+  var loaded = loadState();
+  state.weights = loaded.weights;
+  state.locations = loaded.locations;
+
+  wireWeightSlider('weightSafety','safety','valSafety');
+  wireWeightSlider('weightSchools','schools','valSchools');
+  wireWeightSlider('weightAtmosphere','atmosphere','valAtmosphere');
+  wireWeightSlider('weightAccess','access','valAccess');
+  applyWeightsToInputs();
+
+  wireFilterBar();
+  wireSort();
+  wireDelegatedActions(document.getElementById('gridView'));
+  wireDelegatedActions(document.getElementById('matrixView'));
+  wireDelegatedActions(document.getElementById('archiveList'));
+
+  renderDynamic();
+}
+
+if(document.readyState === 'loading'){
+  document.addEventListener('DOMContentLoaded', init);
+} else {
+  init();
+}
+
+})();
+</script>
+</body>
+</html>
