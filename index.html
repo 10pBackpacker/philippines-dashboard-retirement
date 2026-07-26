@@ -187,6 +187,17 @@ a{ color: var(--palm); }
 .btn-icon svg{ width:15px; height:15px; }
 .btn-icon:hover{ color: var(--ink); border-color: var(--ink-faint); background: var(--paper-sunk); }
 .btn-danger-step{ color: var(--clay); }
+.btn:disabled{ opacity:.45; cursor:not-allowed; }
+.btn:disabled:hover{ box-shadow:none; transform:none; background: var(--paper-sunk); }
+
+.btn-icon-sm{
+  width:28px; height:28px; border-radius:8px; border:1px solid var(--rule); background: var(--paper-raised);
+  display:inline-flex; align-items:center; justify-content:center; color: var(--ink-soft); padding:0;
+  transition: all var(--dur-fast) var(--ease);
+}
+.btn-icon-sm svg{ width:13px; height:13px; }
+.btn-icon-sm:hover{ color: var(--ink); border-color: var(--ink-faint); background: var(--paper-sunk); }
+.btn-icon-sm.btn-icon-danger:hover{ color: var(--clay); border-color: color-mix(in srgb, var(--clay) 55%, var(--rule)); background: var(--clay-soft); }
 
 /* ---------- filter bar ---------- */
 .filterbar{ display:flex; flex-wrap:wrap; align-items:center; gap:16px 22px; }
@@ -233,6 +244,7 @@ a{ color: var(--palm); }
 }
 .card:hover{ box-shadow: var(--shadow-lift); transform: translateY(-2px); }
 .card.is-leading{ border-color: color-mix(in srgb, var(--sun) 55%, var(--rule)); box-shadow: 0 0 0 1px color-mix(in srgb, var(--sun) 35%, transparent), var(--shadow-sm); }
+.card.is-selected{ border-color: color-mix(in srgb, var(--palm) 55%, var(--rule)); box-shadow: 0 0 0 2px var(--palm), var(--shadow-sm); }
 @keyframes cardIn{ from{ opacity:0; transform: translateY(14px); } to{ opacity:1; transform:translateY(0); } }
 
 .card-top{ display:flex; align-items:flex-start; justify-content:space-between; gap:12px; margin-bottom:14px; }
@@ -274,19 +286,16 @@ a{ color: var(--palm); }
 .note-cons li svg{ color: var(--clay); }
 
 .card-foot{ display:flex; align-items:center; justify-content:space-between; gap:10px; }
-.compare-pill{
-  display:inline-flex; align-items:center; gap:7px; padding:7px 13px; border-radius: var(--radius-pill);
-  border:1px solid var(--rule); background: var(--paper-sunk); font-size:12.5px; font-weight:600; color: var(--ink-soft);
-  transition: all var(--dur-fast) var(--ease);
-}
-.compare-pill svg{ width:13px; height:13px; }
-.compare-pill.is-on{ background: color-mix(in srgb, var(--ink) 92%, transparent); color: var(--paper); border-color: var(--ink); }
-.compare-pill.is-pulse{ animation: pulseWarn .5s var(--ease); }
+.compare-field{ display:inline-flex; align-items:center; gap:8px; font-size:12.5px; font-weight:600; color: var(--ink-soft); cursor:pointer; user-select:none; }
+.compare-field:hover{ color: var(--ink); }
+.compare-check{ width:17px; height:17px; accent-color: var(--palm); cursor:pointer; flex-shrink:0; }
+.card-actions{ display:flex; align-items:center; gap:6px; }
+.is-pulse{ animation: pulseWarn .5s var(--ease); border-radius: var(--radius-pill); }
 @keyframes pulseWarn{ 0%,100%{ box-shadow:none; } 40%{ box-shadow: 0 0 0 6px color-mix(in srgb, var(--clay) 24%, transparent); } }
 
 /* ---------- table / matrix ---------- */
 .table-wrap{ overflow-x:auto; border:1px solid var(--rule); border-radius: var(--radius-lg); background: var(--paper-raised); box-shadow: var(--shadow-sm); }
-table{ width:100%; border-collapse:collapse; min-width:820px; }
+table{ width:100%; border-collapse:collapse; min-width:900px; }
 thead th{ text-align:left; padding:14px 16px; border-bottom:1px solid var(--rule); background: var(--paper-sunk); position:sticky; top:0; }
 thead th button{
   background:none; border:none; display:inline-flex; align-items:center; gap:6px; font-weight:700; font-size:11.5px;
@@ -300,6 +309,8 @@ tbody td{ padding:14px 16px; border-bottom:1px solid var(--rule-soft); font-size
 tbody tr:last-child td{ border-bottom:none; }
 tbody tr:nth-child(even){ background: color-mix(in srgb, var(--paper-sunk) 45%, transparent); }
 tbody tr:hover{ background: var(--paper-sunk); }
+tbody tr.is-selected > td{ background: var(--palm-soft); }
+tbody td.t-compare{ text-align:center; }
 td.t-name{ font-family: var(--font-display); font-weight:600; font-size:15.5px; }
 td.t-rank{ color: var(--ink-faint); font-weight:600; width:44px; }
 td.t-num{ font-weight:600; }
@@ -315,18 +326,25 @@ td.t-total{ font-family: var(--font-display); font-weight:700; font-size:16px; }
 .legend-total{ font-family: var(--font-display); font-weight:600; font-size:14px; }
 .radar-caption{ font-size:12.5px; color: var(--ink-soft); margin-top:14px; }
 
-/* ---------- compare ---------- */
+/* ---------- compare modal ---------- */
 .compare-empty{ font-size:14px; color: var(--ink-soft); padding:20px; text-align:center; background: var(--paper-sunk); border-radius: var(--radius-md); border:1px dashed var(--rule); }
-.compare-grid{ display:grid; grid-template-columns: repeat(auto-fit, minmax(220px,1fr)); gap:18px; }
-.compare-card{ border:1px solid var(--rule); border-radius: var(--radius-md); padding:18px; background: var(--paper-sunk); }
-.compare-card h3{ font-family: var(--font-display); font-size:19px; margin:0 0 10px; }
-.compare-row{ display:flex; justify-content:space-between; align-items:center; padding:7px 0; border-bottom:1px dashed var(--rule); font-size:13px; }
-.compare-row:last-of-type{ border-bottom:none; }
-.compare-row .lbl{ color: var(--ink-soft); }
-.compare-row .v{ font-weight:700; }
-.compare-row.is-winner .v{ color: var(--palm); }
-.compare-row.is-winner .v::after{ content:" ●"; font-size:8px; vertical-align:middle; }
-.compare-foot{ margin-top:14px; display:flex; justify-content:flex-end; }
+.compare-modal-grid{ display:grid; gap:16px; grid-template-columns: repeat(var(--cols, 2), 1fr); }
+.compare-col{ border:1px solid var(--rule); border-radius: var(--radius-md); padding:18px; background: var(--paper-sunk); }
+.compare-col-head{ text-align:center; padding-bottom:14px; margin-bottom:14px; border-bottom:1px solid var(--rule); }
+.compare-col-head h3{ font-family: var(--font-display); font-size:19px; margin:8px 0 2px; }
+.compare-col-head .total{ font-family: var(--font-display); font-weight:700; font-size:20px; color: var(--ink); }
+.compare-col-head .total.is-best{ color: var(--palm); }
+.compare-col-head .total .unit{ font-family: var(--font-body); font-weight:400; font-size:11px; color: var(--ink-soft); }
+.compare-metric{ display:flex; justify-content:space-between; align-items:center; padding:9px 12px; border:1px solid var(--rule); border-radius: var(--radius-sm); background: var(--paper-raised); margin-bottom:8px; font-size:12.5px; }
+.compare-metric .lbl{ color: var(--ink-soft); font-weight:600; }
+.compare-metric .v{ font-weight:700; }
+.compare-metric.is-best{ border-color: color-mix(in srgb, var(--palm) 45%, var(--rule)); background: var(--palm-soft); }
+.compare-metric.is-best .v{ color: var(--palm); }
+.compare-best-chip{ display:inline-block; font-size:9px; font-weight:800; letter-spacing:.08em; text-transform:uppercase; color: var(--palm); background: var(--paper-raised); border-radius: var(--radius-pill); padding:2px 7px; margin-left:8px; }
+.compare-col-notes{ margin-top:14px; padding-top:12px; border-top:1px dashed var(--rule); }
+@media (max-width: 720px){
+  .compare-modal-grid{ grid-template-columns: 1fr; }
+}
 
 /* ---------- archive ---------- */
 .archive-list{ display:flex; flex-direction:column; gap:10px; }
@@ -349,6 +367,7 @@ td.t-total{ font-family: var(--font-display); font-weight:700; font-size:16px; }
   padding: 26px clamp(20px,3vw,32px) 28px; transform: translateY(14px) scale(.98); transition: transform var(--dur) var(--ease);
 }
 .modal-overlay.is-open .modal-panel{ transform: translateY(0) scale(1); }
+.modal-panel.modal-wide{ max-width:900px; }
 .modal-head{ display:flex; align-items:flex-start; justify-content:space-between; margin-bottom:18px; }
 .modal-head h2{ font-family: var(--font-display); font-size:24px; margin:0 0 4px; }
 .modal-head p{ font-size:13px; color: var(--ink-soft); margin:0; }
@@ -420,6 +439,7 @@ td.t-total{ font-family: var(--font-display); font-weight:700; font-size:16px; }
     <symbol id="i-columns" viewBox="0 0 24 24"><rect x="3.3" y="4.5" width="7.8" height="15" rx="1.4" fill="none" stroke="currentColor" stroke-width="1.6"/><rect x="12.9" y="4.5" width="7.8" height="15" rx="1.4" fill="none" stroke="currentColor" stroke-width="1.6"/></symbol>
     <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.5 L10 17.5 L19 6.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
     <symbol id="i-mapdot" viewBox="0 0 24 24"><path d="M12 21 C8 16.8 5.5 13.2 5.5 9.8 C5.5 5.9 8.4 3 12 3 C15.6 3 18.5 5.9 18.5 9.8 C18.5 13.2 16 16.8 12 21 Z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><circle cx="12" cy="9.6" r="2.3" fill="none" stroke="currentColor" stroke-width="1.6"/></symbol>
+    <symbol id="i-edit" viewBox="0 0 24 24"><path d="M4 20 L4.8 16.6 L15.5 5.9 C16.1 5.3 17 5.3 17.6 5.9 L18.7 7 C19.3 7.6 19.3 8.5 18.7 9.1 L8 19.8 Z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M14 7.4 L16.6 10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></symbol>
   </defs>
 </svg>
 
@@ -527,6 +547,7 @@ td.t-total{ font-family: var(--font-display); font-weight:700; font-size:16px; }
       </div>
       <div class="filterbar-actions">
         <button class="btn btn-ghost" id="btnToggleArchive"><svg><use href="#i-archive"/></svg>Archive <span id="archiveCount">(0)</span></button>
+        <button class="btn btn-ghost" id="btnOpenCompare" disabled><svg><use href="#i-columns"/></svg>Compare <span id="compareCount">(0)</span></button>
         <button class="btn btn-primary" id="btnAddLocation"><svg><use href="#i-plus"/></svg>Add Location</button>
       </div>
     </div>
@@ -540,6 +561,7 @@ td.t-total{ font-family: var(--font-display); font-weight:700; font-size:16px; }
     <table>
       <thead>
         <tr>
+          <th>Compare</th>
           <th>Rank</th>
           <th><button data-sort="name">Barangay <svg><use href="#i-chevron"/></svg></button></th>
           <th>Status</th>
@@ -567,12 +589,6 @@ td.t-total{ font-family: var(--font-display); font-weight:700; font-size:16px; }
     </div>
   </section>
 
-  <!-- ============ COMPARE ============ -->
-  <section class="panel" id="compareSection">
-    <div class="kicker"><span>Side-by-Side</span><span class="rule"></span></div>
-    <div id="compareBody"></div>
-  </section>
-
   <!-- ============ ARCHIVE ============ -->
   <section class="panel" id="archiveSection" style="display:none">
     <div class="kicker"><span>Archived Locations</span><span class="rule"></span></div>
@@ -592,7 +608,7 @@ td.t-total{ font-family: var(--font-display); font-weight:700; font-size:16px; }
     <div class="modal-head">
       <div>
         <h2 id="modalTitle">Survey a New Location</h2>
-        <p>Add a barangay or subdivision to your working list.</p>
+        <p id="modalSubtitle">Add a barangay or subdivision to your working list.</p>
       </div>
       <button class="btn-icon" id="btnModalClose" aria-label="Close"><svg><use href="#i-x"/></svg></button>
     </div>
@@ -638,9 +654,40 @@ td.t-total{ font-family: var(--font-display); font-weight:700; font-size:16px; }
       </div>
       <div class="modal-actions">
         <button type="button" class="btn btn-ghost" id="btnModalCancel">Cancel</button>
-        <button type="submit" class="btn btn-primary"><svg><use href="#i-check"/></svg>Save Location</button>
+        <button type="submit" class="btn btn-primary"><svg><use href="#i-check"/></svg><span id="btnModalSubmitLabel">Save Location</span></button>
       </div>
     </form>
+  </div>
+</div>
+
+<!-- ============ COMPARE MODAL ============ -->
+<div class="modal-overlay" id="compareModalOverlay">
+  <div class="modal-panel modal-wide" role="dialog" aria-modal="true" aria-labelledby="compareModalTitle">
+    <div class="modal-head">
+      <div>
+        <h2 id="compareModalTitle">Side-by-Side Comparison</h2>
+        <p>Weighted totals reflect your current sliders above.</p>
+      </div>
+      <button class="btn-icon" id="btnCompareModalClose" aria-label="Close"><svg><use href="#i-x"/></svg></button>
+    </div>
+    <div id="compareModalBody"></div>
+  </div>
+</div>
+
+<!-- ============ DELETE CONFIRM MODAL ============ -->
+<div class="modal-overlay" id="deleteModalOverlay">
+  <div class="modal-panel" role="dialog" aria-modal="true" aria-labelledby="deleteModalTitle" style="max-width:420px">
+    <div class="modal-head">
+      <div>
+        <h2 id="deleteModalTitle">Delete Location?</h2>
+        <p id="deleteModalBody">This removes it permanently from your list.</p>
+      </div>
+      <button class="btn-icon" id="btnDeleteModalClose" aria-label="Close"><svg><use href="#i-x"/></svg></button>
+    </div>
+    <div class="modal-actions">
+      <button type="button" class="btn btn-ghost" id="btnDeleteCancel">Cancel</button>
+      <button type="button" class="btn btn-primary" id="btnDeleteConfirm" style="background:var(--clay)"><svg><use href="#i-trash"/></svg>Delete Permanently</button>
+    </div>
   </div>
 </div>
 
@@ -738,8 +785,11 @@ var state = {
   sort: { key:'total', dir:'desc' },
   compare: new Set(),
   showArchived: false,
-  pendingDelete: null
+  pendingDelete: null,
+  editingId: null
 };
+var hasRenderedOnce = false;
+var pendingCardDeleteId = null;
 
 /* ===================== HELPERS ===================== */
 function clone(o){ return JSON.parse(JSON.stringify(o)); }
@@ -870,7 +920,7 @@ var matrixBody = $('#matrixBody');
 var radarSvg = $('#radarSvg');
 var radarLegend = $('#radarLegend');
 var radarCaption = $('#radarCaption');
-var compareBody = $('#compareBody');
+var compareModalBody = $('#compareModalBody');
 var archiveList = $('#archiveList');
 var liveStatus = $('#liveStatus');
 
@@ -910,14 +960,15 @@ function notesHtml(items, cls, icon){
   }).join('') + '</ul>';
 }
 
-function cardHtml(loc, rank, isLeading, delayIdx){
+function cardHtml(loc, rank, isLeading, delayIdx, animate){
   var max = currentMax(state.weights);
   var statusTag = loc.status === 'High Risk'
     ? '<span class="tag tag-risk"><svg><use href="#i-flag"/></svg>High Risk</span>'
     : '<span class="tag tag-active"><svg><use href="#i-check"/></svg>Active</span>';
   var isComparing = state.compare.has(loc.id);
+  var styleAttr = animate ? 'animation-delay:'+(delayIdx*45)+'ms' : 'animation:none; opacity:1; transform:none';
   return '' +
-    '<article class="card'+(isLeading?' is-leading':'')+'" style="animation-delay:'+(delayIdx*45)+'ms" data-id="'+loc.id+'">' +
+    '<article class="card'+(isLeading?' is-leading':'')+(isComparing?' is-selected':'')+'" style="'+styleAttr+'" data-id="'+loc.id+'">' +
       '<div class="card-top">' +
         '<div class="rank-badge"><span class="n num">'+rank+'</span><span class="lbl">Rank</span></div>' +
         dialHtml(loc.total, max, rank) +
@@ -935,8 +986,15 @@ function cardHtml(loc, rank, isLeading, delayIdx){
         (loc.cons.length ? '<div class="note-block"><div class="note-label">Trade-offs</div>'+notesHtml(loc.cons,'note-cons','i-flag')+'</div>' : '') +
       '</div>' +
       '<div class="card-foot">' +
-        '<button class="compare-pill'+(isComparing?' is-on':'')+'" data-action="compare" data-id="'+loc.id+'"><svg><use href="#i-columns"/></svg>'+(isComparing?'Comparing':'Compare')+'</button>' +
-        '<button class="btn-icon" data-action="archive" data-id="'+loc.id+'" title="Archive '+escapeHtml(loc.name)+'" aria-label="Archive '+escapeHtml(loc.name)+'"><svg><use href="#i-archive"/></svg></button>' +
+        '<label class="compare-field">' +
+          '<input type="checkbox" class="compare-check" data-action="compare" data-id="'+loc.id+'"'+(isComparing?' checked':'')+'>' +
+          '<span>Compare</span>' +
+        '</label>' +
+        '<div class="card-actions">' +
+          '<button class="btn-icon-sm" data-action="edit" data-id="'+loc.id+'" title="Edit '+escapeHtml(loc.name)+'" aria-label="Edit '+escapeHtml(loc.name)+'"><svg><use href="#i-edit"/></svg></button>' +
+          '<button class="btn-icon-sm" data-action="archive" data-id="'+loc.id+'" title="Archive '+escapeHtml(loc.name)+'" aria-label="Archive '+escapeHtml(loc.name)+'"><svg><use href="#i-archive"/></svg></button>' +
+          '<button class="btn-icon-sm btn-icon-danger" data-action="delete-card" data-id="'+loc.id+'" title="Delete '+escapeHtml(loc.name)+'" aria-label="Delete '+escapeHtml(loc.name)+'"><svg><use href="#i-trash"/></svg></button>' +
+        '</div>' +
       '</div>' +
     '</article>';
 }
@@ -947,7 +1005,8 @@ function matrixRowHtml(loc, rank){
     ? '<span class="tag tag-risk"><svg><use href="#i-flag"/></svg>Risk</span>'
     : '<span class="tag tag-active"><svg><use href="#i-check"/></svg>Active</span>';
   return '' +
-    '<tr data-id="'+loc.id+'">' +
+    '<tr class="'+(isComparing?'is-selected':'')+'" data-id="'+loc.id+'">' +
+      '<td class="t-compare"><input type="checkbox" class="compare-check" data-action="compare" data-id="'+loc.id+'"'+(isComparing?' checked':'')+' aria-label="Compare '+escapeHtml(loc.name)+'"></td>' +
       '<td class="t-rank num">'+rank+'</td>' +
       '<td class="t-name">'+escapeHtml(loc.name)+'</td>' +
       '<td>'+statusTag+'</td>' +
@@ -957,8 +1016,9 @@ function matrixRowHtml(loc, rank){
       '<td class="t-num num">'+fmt1(loc.access)+'</td>' +
       '<td class="t-total num">'+fmt1(loc.total)+'</td>' +
       '<td><div class="matrix-actions">' +
-        '<button class="btn-icon" data-action="compare" data-id="'+loc.id+'" title="Compare" aria-label="Toggle compare" style="'+(isComparing?'color:var(--palm);border-color:var(--palm)':'')+'"><svg><use href="#i-columns"/></svg></button>' +
-        '<button class="btn-icon" data-action="archive" data-id="'+loc.id+'" title="Archive" aria-label="Archive '+escapeHtml(loc.name)+'"><svg><use href="#i-archive"/></svg></button>' +
+        '<button class="btn-icon-sm" data-action="edit" data-id="'+loc.id+'" title="Edit" aria-label="Edit '+escapeHtml(loc.name)+'"><svg><use href="#i-edit"/></svg></button>' +
+        '<button class="btn-icon-sm" data-action="archive" data-id="'+loc.id+'" title="Archive" aria-label="Archive '+escapeHtml(loc.name)+'"><svg><use href="#i-archive"/></svg></button>' +
+        '<button class="btn-icon-sm btn-icon-danger" data-action="delete-card" data-id="'+loc.id+'" title="Delete" aria-label="Delete '+escapeHtml(loc.name)+'"><svg><use href="#i-trash"/></svg></button>' +
       '</div></td>' +
     '</tr>';
 }
@@ -1017,11 +1077,22 @@ function renderRadar(list){
 }
 
 /* ===================== RENDER: compare ===================== */
-function renderCompare(allFiltered){
-  var selected = allFiltered.filter(function(l){ return state.compare.has(l.id); });
+function computeRadarSource(withT){
+  var src = withT.filter(function(l){ return state.compare.has(l.id); });
+  if(src.length < 2){
+    src = withT.slice().sort(function(a,b){ return b.total-a.total; }).slice(0,3);
+  } else {
+    src = src.slice(0,3);
+  }
+  return src;
+}
+
+function renderCompareModalBody(){
+  var withT = withTotals(getFiltered());
+  var selected = withT.filter(function(l){ return state.compare.has(l.id); });
   if(selected.length < 2){
-    compareBody.innerHTML = '<div class="compare-empty">Select 2–3 locations (use the “Compare” button on a card or row) to see them side-by-side.</div>';
-    return selected;
+    compareModalBody.innerHTML = '<div class="compare-empty">Select 2–3 locations to compare — use the checkbox on any card or table row.</div>';
+    return;
   }
   var bestOf = {};
   CRITERIA.forEach(function(c){
@@ -1029,30 +1100,30 @@ function renderCompare(allFiltered){
   });
   var bestTotal = Math.max.apply(null, selected.map(function(l){ return l.total; }));
 
-  var cards = selected.map(function(loc){
-    var rows = CRITERIA.map(function(c){
-      var isWin = loc[c.key] === bestOf[c.key];
-      return '<div class="compare-row'+(isWin?' is-winner':'')+'"><span class="lbl">'+c.label+'</span><span class="v num">'+fmt1(loc[c.key])+'</span></div>';
+  var cols = selected.map(function(loc){
+    var statusTag = loc.status === 'High Risk'
+      ? '<span class="tag tag-risk"><svg><use href="#i-flag"/></svg>High Risk</span>'
+      : '<span class="tag tag-active"><svg><use href="#i-check"/></svg>Active</span>';
+    var metrics = CRITERIA.map(function(c){
+      var isBest = loc[c.key] === bestOf[c.key];
+      return '<div class="compare-metric'+(isBest?' is-best':'')+'"><span class="lbl">'+c.label+'</span><span class="v num">'+fmt1(loc[c.key])+(isBest?'<span class="compare-best-chip">Best</span>':'')+'</span></div>';
     }).join('');
-    var totalWin = loc.total === bestTotal;
+    var totalBest = loc.total === bestTotal;
     return '' +
-      '<div class="compare-card">' +
-        '<h3>'+escapeHtml(loc.name)+'</h3>' +
-        rows +
-        '<div class="compare-row'+(totalWin?' is-winner':'')+'" style="border-top:1px solid var(--rule); margin-top:6px; padding-top:10px"><span class="lbl">Weighted Total</span><span class="v num">'+fmt1(loc.total)+'</span></div>' +
+      '<div class="compare-col">' +
+        '<div class="compare-col-head">' + statusTag +
+          '<h3>'+escapeHtml(loc.name)+'</h3>' +
+          '<div class="total'+(totalBest?' is-best':'')+'">'+fmt1(loc.total)+' <span class="unit">weighted total</span></div>' +
+        '</div>' +
+        metrics +
+        '<div class="compare-col-notes">' +
+          (loc.pros.length ? '<div class="note-block"><div class="note-label">What works</div>'+notesHtml(loc.pros,'note-pros','i-check')+'</div>' : '') +
+          (loc.cons.length ? '<div class="note-block" style="margin-top:8px"><div class="note-label">Trade-offs</div>'+notesHtml(loc.cons,'note-cons','i-flag')+'</div>' : '') +
+        '</div>' +
       '</div>';
   }).join('');
 
-  compareBody.innerHTML = '<div class="compare-grid">'+cards+'</div>' +
-    '<div class="compare-foot"><button class="btn-text" id="btnClearCompare">Clear comparison</button></div>';
-
-  var clearBtn = document.getElementById('btnClearCompare');
-  if(clearBtn) clearBtn.addEventListener('click', function(){
-    state.compare.clear();
-    renderDynamic();
-  });
-
-  return selected;
+  compareModalBody.innerHTML = '<div class="compare-modal-grid" style="--cols:'+selected.length+'">'+cols+'</div>';
 }
 
 /* ===================== RENDER: archive ===================== */
@@ -1083,35 +1154,27 @@ function renderDynamic(){
   var rankMap = computeRanks(filtered);
   var withT = withTotals(filtered);
 
-  // grid
+  // grid — entrance animation only plays on the very first render; later
+  // rebuilds (weights, search, sort, edits) render cards already settled so
+  // toggling a checkbox or nudging a slider never replays the fade-in.
   var gridSorted = withT.slice().sort(function(a,b){ return rankMap[a.id]-rankMap[b.id]; });
   if(!gridSorted.length){
     gridView.innerHTML = '<div class="compare-empty" style="grid-column:1/-1">No locations match your filters. Try widening the search or lowering the safety threshold.</div>';
   } else {
     gridView.innerHTML = gridSorted.map(function(loc, i){
-      return cardHtml(loc, rankMap[loc.id], rankMap[loc.id]===1, i);
+      return cardHtml(loc, rankMap[loc.id], rankMap[loc.id]===1, i, !hasRenderedOnce);
     }).join('');
   }
+  hasRenderedOnce = true;
 
   // matrix
   var matrixSorted = sortList(withT, state.sort);
   matrixBody.innerHTML = matrixSorted.length
     ? matrixSorted.map(function(loc){ return matrixRowHtml(loc, rankMap[loc.id]); }).join('')
-    : '<tr><td colspan="9" style="text-align:center; color:var(--ink-soft); padding:28px">No locations match your filters.</td></tr>';
+    : '<tr><td colspan="10" style="text-align:center; color:var(--ink-soft); padding:28px">No locations match your filters.</td></tr>';
 
-  // radar: compare selection if >=2, else top 3
-  var radarSource = withT.filter(function(l){ return state.compare.has(l.id); });
-  if(radarSource.length < 2){
-    radarSource = withT.slice().sort(function(a,b){ return b.total-a.total; }).slice(0,3);
-  } else {
-    radarSource = radarSource.slice(0,3);
-  }
-  renderRadar(radarSource);
-
-  // compare
-  renderCompare(withT);
-
-  // archive
+  renderRadar(computeRadarSource(withT));
+  renderCompareModalBody();
   renderArchive();
 
   // header stats
@@ -1119,8 +1182,36 @@ function renderDynamic(){
   document.getElementById('statFlagged').textContent = active.filter(function(l){ return l.status==='High Risk'; }).length;
   document.getElementById('statArchived').textContent = state.locations.filter(function(l){ return l.archived; }).length;
   document.getElementById('archiveCount').textContent = '(' + state.locations.filter(function(l){ return l.archived; }).length + ')';
+  document.getElementById('compareCount').textContent = '(' + state.compare.size + ')';
+  document.getElementById('btnOpenCompare').disabled = state.compare.size < 2;
 
   liveStatus.textContent = 'Showing '+filtered.length+' of '+active.length+' active locations, sorted by '+state.sort.key+' '+state.sort.dir+'ending.';
+}
+
+/* ===================== EVENTS: compare selection (no full re-render) ===================== */
+function applyCompareVisuals(){
+  document.querySelectorAll('#gridView .card').forEach(function(card){
+    var id = card.getAttribute('data-id');
+    var on = state.compare.has(id);
+    card.classList.toggle('is-selected', on);
+    var cb = card.querySelector('.compare-check');
+    if(cb) cb.checked = on;
+  });
+  document.querySelectorAll('#matrixBody tr').forEach(function(row){
+    var id = row.getAttribute('data-id');
+    var on = state.compare.has(id);
+    row.classList.toggle('is-selected', on);
+    var cb = row.querySelector('.compare-check');
+    if(cb) cb.checked = on;
+  });
+  document.getElementById('compareCount').textContent = '(' + state.compare.size + ')';
+  document.getElementById('btnOpenCompare').disabled = state.compare.size < 2;
+
+  // the radar and compare-modal content are separate DOM subtrees with no
+  // entrance animation, so refreshing them here is cheap and flash-free.
+  var withT = withTotals(getFiltered());
+  renderRadar(computeRadarSource(withT));
+  renderCompareModalBody();
 }
 
 /* ===================== EVENTS: weights ===================== */
@@ -1228,15 +1319,19 @@ function toggleCompare(id, triggerEl){
     state.compare.delete(id);
   } else {
     if(state.compare.size >= 3){
-      if(triggerEl){
-        triggerEl.classList.add('is-pulse');
-        setTimeout(function(){ triggerEl.classList.remove('is-pulse'); }, 500);
+      // reject the 4th selection — the native checkbox already flipped to
+      // checked before this handler ran, so put it back
+      if(triggerEl && triggerEl.tagName === 'INPUT') triggerEl.checked = false;
+      var pulseTarget = triggerEl ? (triggerEl.closest('.compare-field') || triggerEl) : null;
+      if(pulseTarget){
+        pulseTarget.classList.add('is-pulse');
+        setTimeout(function(){ pulseTarget.classList.remove('is-pulse'); }, 500);
       }
       return;
     }
     state.compare.add(id);
   }
-  renderDynamic();
+  applyCompareVisuals();
 }
 
 function wireDelegatedActions(container){
@@ -1263,6 +1358,10 @@ function wireDelegatedActions(container){
         saveState();
         renderDynamic();
       }
+    } else if(action === 'edit'){
+      openLocationModal(id);
+    } else if(action === 'delete-card'){
+      openDeleteModal(id);
     } else if(action === 'delete'){
       if(state.pendingDelete === id){
         state.locations = state.locations.filter(function(l){ return l.id !== id; });
@@ -1283,42 +1382,79 @@ function wireDelegatedActions(container){
   });
 }
 
-/* ===================== MODAL ===================== */
-var modalOverlay = document.getElementById('modalOverlay');
-var modalTrigger = document.getElementById('btnAddLocation');
-var lastFocused = null;
-
-function openModal(){
-  lastFocused = document.activeElement;
-  modalOverlay.classList.add('is-open');
-  document.getElementById('formAddLocation').reset();
-  document.getElementById('errName').textContent = '';
-  document.getElementById('errScores').textContent = '';
-  setTimeout(function(){ document.getElementById('inputName').focus(); }, 50);
-  document.addEventListener('keydown', onModalKeydown);
-}
-function closeModal(){
-  modalOverlay.classList.remove('is-open');
-  document.removeEventListener('keydown', onModalKeydown);
-  if(lastFocused) lastFocused.focus();
-}
-function onModalKeydown(e){
-  if(e.key === 'Escape'){ closeModal(); return; }
-  if(e.key === 'Tab'){
-    var focusables = modalOverlay.querySelectorAll('input, select, textarea, button');
-    if(!focusables.length) return;
-    var first = focusables[0], last = focusables[focusables.length-1];
-    if(e.shiftKey && document.activeElement === first){
-      e.preventDefault(); last.focus();
-    } else if(!e.shiftKey && document.activeElement === last){
-      e.preventDefault(); first.focus();
+/* ===================== MODAL (shared controller for all three overlays) ===================== */
+function makeModalController(overlayEl){
+  var lastFocused = null;
+  function onKeydown(e){
+    if(e.key === 'Escape'){ close(); return; }
+    if(e.key === 'Tab'){
+      var focusables = overlayEl.querySelectorAll('input, select, textarea, button');
+      if(!focusables.length) return;
+      var first = focusables[0], last = focusables[focusables.length-1];
+      if(e.shiftKey && document.activeElement === first){
+        e.preventDefault(); last.focus();
+      } else if(!e.shiftKey && document.activeElement === last){
+        e.preventDefault(); first.focus();
+      }
     }
   }
+  function open(focusEl){
+    lastFocused = document.activeElement;
+    overlayEl.classList.add('is-open');
+    document.addEventListener('keydown', onKeydown);
+    setTimeout(function(){
+      var target = focusEl || overlayEl.querySelector('input, select, textarea, button');
+      if(target) target.focus();
+    }, 50);
+  }
+  function close(){
+    overlayEl.classList.remove('is-open');
+    document.removeEventListener('keydown', onKeydown);
+    if(lastFocused) lastFocused.focus();
+  }
+  overlayEl.addEventListener('click', function(e){ if(e.target === overlayEl) close(); });
+  return { open: open, close: close };
 }
-modalTrigger.addEventListener('click', openModal);
-document.getElementById('btnModalClose').addEventListener('click', closeModal);
-document.getElementById('btnModalCancel').addEventListener('click', closeModal);
-modalOverlay.addEventListener('click', function(e){ if(e.target === modalOverlay) closeModal(); });
+
+var addEditModal = makeModalController(document.getElementById('modalOverlay'));
+var compareModal = makeModalController(document.getElementById('compareModalOverlay'));
+var deleteModal = makeModalController(document.getElementById('deleteModalOverlay'));
+
+/* ---------- add / edit location ---------- */
+function openLocationModal(id){
+  var form = document.getElementById('formAddLocation');
+  form.reset();
+  document.getElementById('errName').textContent = '';
+  document.getElementById('errScores').textContent = '';
+
+  if(id){
+    var loc = state.locations.find(function(l){ return l.id === id; });
+    if(!loc) return;
+    state.editingId = id;
+    document.getElementById('modalTitle').textContent = 'Edit Location';
+    document.getElementById('modalSubtitle').textContent = 'Update scores, notes, or status for ' + loc.name + '.';
+    document.getElementById('btnModalSubmitLabel').textContent = 'Save Changes';
+    document.getElementById('inputName').value = loc.name;
+    document.getElementById('inputSafety').value = loc.safety;
+    document.getElementById('inputSchools').value = loc.schools;
+    document.getElementById('inputAtmosphere').value = loc.atmosphere;
+    document.getElementById('inputAccess').value = loc.access;
+    document.getElementById('inputPros').value = loc.pros.join('\n');
+    document.getElementById('inputCons').value = loc.cons.join('\n');
+    document.getElementById('inputStatus').value = loc.status;
+  } else {
+    state.editingId = null;
+    document.getElementById('modalTitle').textContent = 'Survey a New Location';
+    document.getElementById('modalSubtitle').textContent = 'Add a barangay or subdivision to your working list.';
+    document.getElementById('btnModalSubmitLabel').textContent = 'Save Location';
+  }
+
+  addEditModal.open(document.getElementById('inputName'));
+}
+
+document.getElementById('btnAddLocation').addEventListener('click', function(){ openLocationModal(null); });
+document.getElementById('btnModalClose').addEventListener('click', function(){ addEditModal.close(); });
+document.getElementById('btnModalCancel').addEventListener('click', function(){ addEditModal.close(); });
 
 document.getElementById('formAddLocation').addEventListener('submit', function(e){
   e.preventDefault();
@@ -1351,22 +1487,65 @@ document.getElementById('formAddLocation').addEventListener('submit', function(e
   var cons = document.getElementById('inputCons').value.split('\n').map(function(s){ return s.trim(); }).filter(Boolean);
   var status = document.getElementById('inputStatus').value;
 
-  state.locations.push({
-    id: makeId(),
-    name: name,
-    safety: values.inputSafety,
-    schools: values.inputSchools,
-    atmosphere: values.inputAtmosphere,
-    access: values.inputAccess,
-    pros: pros,
-    cons: cons,
-    status: status,
-    archived: false,
-    seeded: false
-  });
+  if(state.editingId){
+    var editing = state.locations.find(function(l){ return l.id === state.editingId; });
+    if(editing){
+      editing.name = name;
+      editing.safety = values.inputSafety;
+      editing.schools = values.inputSchools;
+      editing.atmosphere = values.inputAtmosphere;
+      editing.access = values.inputAccess;
+      editing.pros = pros;
+      editing.cons = cons;
+      editing.status = status;
+    }
+  } else {
+    state.locations.push({
+      id: makeId(),
+      name: name,
+      safety: values.inputSafety,
+      schools: values.inputSchools,
+      atmosphere: values.inputAtmosphere,
+      access: values.inputAccess,
+      pros: pros,
+      cons: cons,
+      status: status,
+      archived: false,
+      seeded: false
+    });
+  }
 
+  state.editingId = null;
   saveState();
-  closeModal();
+  addEditModal.close();
+  renderDynamic();
+});
+
+/* ---------- compare modal ---------- */
+document.getElementById('btnOpenCompare').addEventListener('click', function(){
+  if(state.compare.size < 2) return;
+  renderCompareModalBody();
+  compareModal.open(document.getElementById('btnCompareModalClose'));
+});
+document.getElementById('btnCompareModalClose').addEventListener('click', function(){ compareModal.close(); });
+
+/* ---------- delete confirmation ---------- */
+function openDeleteModal(id){
+  var loc = state.locations.find(function(l){ return l.id === id; });
+  if(!loc) return;
+  pendingCardDeleteId = id;
+  document.getElementById('deleteModalBody').textContent = 'Permanently remove "' + loc.name + '" from your list? This can’t be undone.';
+  deleteModal.open(document.getElementById('btnDeleteCancel'));
+}
+document.getElementById('btnDeleteModalClose').addEventListener('click', function(){ deleteModal.close(); });
+document.getElementById('btnDeleteCancel').addEventListener('click', function(){ deleteModal.close(); });
+document.getElementById('btnDeleteConfirm').addEventListener('click', function(){
+  if(!pendingCardDeleteId) return;
+  state.locations = state.locations.filter(function(l){ return l.id !== pendingCardDeleteId; });
+  state.compare.delete(pendingCardDeleteId);
+  pendingCardDeleteId = null;
+  saveState();
+  deleteModal.close();
   renderDynamic();
 });
 
