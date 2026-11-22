@@ -226,7 +226,8 @@ a{ color: var(--palm); }
   color: var(--ink-soft); transition: background var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease), box-shadow var(--dur-fast) var(--ease);
 }
 .segmented button.is-active{ background: var(--paper-raised); color: var(--ink); box-shadow: var(--shadow-sm); }
-.segmented button svg{ width:14px; height:14px; margin-right:6px; vertical-align:-2px; }
+.segmented button{ display:inline-flex; align-items:center; justify-content:center; gap:6px; }
+.segmented button svg{ width:14px; height:14px; flex-shrink:0; }
 
 .filterbar-actions{ display:flex; flex-wrap:wrap; align-items:center; gap:10px 12px; margin-left:auto; min-width:0; }
 
