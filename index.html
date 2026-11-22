@@ -4,11 +4,12 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Finding Ground — A Davao City Field Almanac</title>
-<meta name="description" content="A field almanac for weighing where to plant roots across six Davao City barangays.">
+<meta name="description" content="A field almanac for weighing where to plant roots across Davao City barangays and nearby towns.">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Ctext y=%22.9em%22 font-size=%2290%22%3E%F0%9F%A7%AD%3C/text%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..900;1,9..144,300..900&family=Hanken+Grotesk:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" crossorigin="anonymous">
 <style>
 /* ============================================================
    FINDING GROUND — a field almanac for Davao City relocation
@@ -58,7 +59,7 @@
 }
 
 *, *::before, *::after{ box-sizing: border-box; }
-html{ -webkit-text-size-adjust:100%; }
+html{ -webkit-text-size-adjust:100%; overflow-x:hidden; overflow-x:clip; }
 body{
   margin:0;
   background: var(--paper);
@@ -68,7 +69,9 @@ body{
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
   overflow-x: hidden;
+  overflow-x: clip;
   position: relative;
+  max-width: 100%;
 }
 img,svg{ display:block; max-width:100%; }
 button, input, select, textarea{ font-family: inherit; font-size: inherit; color: inherit; }
@@ -84,7 +87,7 @@ a{ color: var(--palm); }
 :focus-visible{ outline: 2px solid var(--ink); outline-offset: 2px; border-radius: 4px; }
 
 /* ---------- background atmosphere ---------- */
-.bg-grain{ position:fixed; inset:0; z-index:0; pointer-events:none; opacity:.4; mix-blend-mode:multiply; }
+.bg-grain{ position:fixed; top:0; left:0; width:100%; height:100%; z-index:0; pointer-events:none; opacity:.4; mix-blend-mode:multiply; }
 
 .app{ position:relative; z-index:1; max-width:1240px; margin:0 auto; padding: clamp(20px,4vw,56px) clamp(18px,4vw,40px) 80px; }
 
@@ -128,7 +131,7 @@ a{ color: var(--palm); }
 .panel-head .sub{ font-size:13px; color:var(--ink-soft); }
 
 /* ---------- weight sliders ---------- */
-.weights-grid{ display:grid; grid-template-columns: repeat(auto-fit, minmax(230px,1fr)); gap: 22px 28px; }
+.weights-grid{ display:grid; grid-template-columns: repeat(auto-fit, minmax(min(230px,100%),1fr)); gap: 22px 28px; }
 .weight-row .weight-label{ display:flex; align-items:center; gap:9px; margin-bottom:10px; }
 .weight-row .weight-icon{
   width:30px; height:30px; border-radius:9px; display:flex; align-items:center; justify-content:center;
@@ -202,7 +205,7 @@ a{ color: var(--palm); }
 /* ---------- filter bar ---------- */
 .filterbar{ display:flex; flex-wrap:wrap; align-items:center; gap:16px 22px; }
 .field-search{
-  position:relative; flex: 1 1 220px; min-width:200px;
+  position:relative; flex: 1 1 220px; min-width:min(200px,100%);
 }
 .field-search svg{ position:absolute; left:14px; top:50%; transform:translateY(-50%); width:16px; height:16px; color: var(--ink-faint); }
 .field-search input{
@@ -212,7 +215,7 @@ a{ color: var(--palm); }
 .field-search input:focus{ background: var(--paper-raised); border-color: var(--ink-faint); }
 .field-search input::placeholder{ color: var(--ink-faint); }
 
-.field-minsafety{ display:flex; align-items:center; gap:10px; flex: 1 1 220px; min-width:220px; }
+.field-minsafety{ display:flex; align-items:center; gap:10px; flex: 1 1 220px; min-width:min(220px,100%); }
 .field-minsafety label{ font-size:12.5px; color: var(--ink-soft); font-weight:600; white-space:nowrap; }
 .field-minsafety .range-wrap{ flex:1; }
 .field-minsafety .minsafety-val{ font-family: var(--font-display); font-weight:600; font-size:14px; min-width:30px; }
@@ -223,9 +226,10 @@ a{ color: var(--palm); }
   color: var(--ink-soft); transition: background var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease), box-shadow var(--dur-fast) var(--ease);
 }
 .segmented button.is-active{ background: var(--paper-raised); color: var(--ink); box-shadow: var(--shadow-sm); }
-.segmented button svg{ width:14px; height:14px; margin-right:6px; vertical-align:-2px; }
+.segmented button{ display:inline-flex; align-items:center; justify-content:center; gap:6px; }
+.segmented button svg{ width:14px; height:14px; flex-shrink:0; }
 
-.filterbar-actions{ display:flex; align-items:center; gap:12px; margin-left:auto; }
+.filterbar-actions{ display:flex; flex-wrap:wrap; align-items:center; gap:10px 12px; margin-left:auto; min-width:0; }
 
 /* ---------- tags ---------- */
 .tag{ display:inline-flex; align-items:center; gap:5px; font-size:11px; font-weight:700; letter-spacing:.04em; text-transform:uppercase; padding:5px 10px; border-radius: var(--radius-pill); }
@@ -234,7 +238,8 @@ a{ color: var(--palm); }
 .tag-risk{ background: var(--clay-soft); color: var(--clay); }
 
 /* ---------- grid of cards ---------- */
-#gridView{ display:grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 22px; }
+#gridView{ display:grid; grid-template-columns: repeat(auto-fill, minmax(min(320px,100%), 1fr)); gap: 22px; }
+#gridView > *{ min-width:0; }
 .card{
   background: var(--paper-raised); border:1px solid var(--rule); border-radius: var(--radius-lg);
   box-shadow: var(--shadow-sm); padding: 22px 22px 18px; position:relative; overflow:hidden;
@@ -294,7 +299,7 @@ a{ color: var(--palm); }
 @keyframes pulseWarn{ 0%,100%{ box-shadow:none; } 40%{ box-shadow: 0 0 0 6px color-mix(in srgb, var(--clay) 24%, transparent); } }
 
 /* ---------- table / matrix ---------- */
-.table-wrap{ overflow-x:auto; border:1px solid var(--rule); border-radius: var(--radius-lg); background: var(--paper-raised); box-shadow: var(--shadow-sm); }
+.table-wrap{ overflow-x:auto; -webkit-overflow-scrolling:touch; overscroll-behavior-x:contain; max-width:100%; border:1px solid var(--rule); border-radius: var(--radius-lg); background: var(--paper-raised); box-shadow: var(--shadow-sm); }
 table{ width:100%; border-collapse:collapse; min-width:900px; }
 thead th{ text-align:left; padding:14px 16px; border-bottom:1px solid var(--rule); background: var(--paper-sunk); position:sticky; top:0; }
 thead th button{
@@ -318,7 +323,7 @@ td.t-total{ font-family: var(--font-display); font-weight:700; font-size:16px; }
 .matrix-actions{ display:flex; align-items:center; gap:8px; justify-content:flex-end; }
 
 /* ---------- radar ---------- */
-.radar-layout{ display:grid; grid-template-columns: minmax(260px,340px) 1fr; gap:28px; align-items:center; }
+.radar-layout{ display:grid; grid-template-columns: minmax(min(260px,100%),340px) minmax(0,1fr); gap:28px; align-items:center; }
 .radar-legend{ display:flex; flex-direction:column; gap:10px; }
 .legend-row{ display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius: var(--radius-md); background: var(--paper-sunk); }
 .legend-swatch{ width:12px; height:12px; border-radius:3px; flex-shrink:0; }
@@ -391,6 +396,28 @@ td.t-total{ font-family: var(--font-display); font-weight:700; font-size:16px; }
   .form-grid4{ grid-template-columns: repeat(2,1fr); }
 }
 
+/* ---------- map ---------- */
+#mapView{ display:none; margin-bottom:28px; }
+.map-canvas{ height: min(68vh, 620px); min-height:320px; border:1px solid var(--rule); border-radius: var(--radius-lg); overflow:hidden; background: var(--paper-sunk); box-shadow: var(--shadow-sm); position:relative; z-index:0; }
+.map-note{ font-size:12.5px; color: var(--ink-soft); margin: 10px 2px 0; }
+.map-fail{ padding:28px; text-align:center; color: var(--ink-soft); font-size:14px; }
+.map-pin{ background:none; border:none; }
+.map-pin span{
+  display:flex; align-items:center; justify-content:center; width:30px; height:30px; border-radius:50% 50% 50% 0; transform: rotate(-45deg);
+  border:2px solid #fff; box-shadow: 0 2px 6px rgba(0,0,0,.35); color:#fff; font:700 12px var(--font-body);
+}
+.map-pin span b{ transform: rotate(45deg); font-weight:700; }
+.map-pop h4{ font-family: var(--font-display); font-size:16px; margin:0 0 2px; }
+.map-pop p{ margin:0 0 8px; font-size:12.5px; color: var(--ink-soft); }
+.map-pop .btn{ padding:8px 12px; font-size:12.5px; }
+.leaflet-container{ font-family: var(--font-body); }
+.leaflet-popup-content{ margin:12px 14px; }
+.card.is-flash{ opacity:1 !important; transform:none !important; animation: flashCard 1.6s var(--ease) !important; }
+@keyframes flashCard{ 0%,60%{ box-shadow: 0 0 0 3px var(--sun), var(--shadow-lift); } 100%{ box-shadow: var(--shadow-sm); } }
+.coords-hint{ font-size:11.5px; color: var(--ink-faint); margin-top:5px; }
+.form-grid2{ display:grid; grid-template-columns: repeat(2,1fr); gap:12px; }
+.form-grid2 .form-row{ margin-bottom:0; }
+
 /* ---------- footer ---------- */
 .colophon{ margin-top:40px; padding-top:22px; border-top:1px solid var(--rule); font-size:12.5px; color: var(--ink-faint); display:flex; justify-content:space-between; flex-wrap:wrap; gap:8px; }
 
@@ -400,7 +427,16 @@ td.t-total{ font-family: var(--font-display); font-weight:700; font-size:16px; }
   .filterbar-actions{ margin-left:0; width:100%; justify-content:space-between; }
 }
 @media (max-width: 560px){
+  .app{ padding-left:16px; padding-right:16px; }
   .panel{ padding:20px 16px; }
+  .segmented{ width:100%; }
+  .segmented button{ flex:1; padding:10px 8px; }
+  .filterbar-actions .btn{ flex:1 1 auto; justify-content:center; padding:12px 14px; }
+  .btn-icon-sm{ width:36px; height:36px; }
+  .btn-icon-sm svg{ width:15px; height:15px; }
+  .compare-field{ padding:6px 0; }
+  .map-canvas{ height: min(62vh, 460px); }
+  .card-name{ overflow-wrap:anywhere; }
   #gridView{ grid-template-columns: 1fr; }
   .form-grid4{ grid-template-columns: repeat(2,1fr); }
   .metric-row{ grid-template-columns: 18px 76px 1fr 30px; }
@@ -458,7 +494,7 @@ td.t-total{ font-family: var(--font-display); font-weight:700; font-size:16px; }
       <span class="eyebrow">Field Almanac · Davao City, Philippines</span>
     </div>
     <h1>Finding <em>Ground</em></h1>
-    <p class="lede">Six barangays, surveyed against what your family actually needs — flood safety, schools, quiet, and reach. Adjust what matters most below and watch the ranking settle.</p>
+    <p class="lede">Every candidate area, surveyed against what your family actually needs — flood safety, schools, quiet, and reach. Adjust what matters most below and watch the ranking settle.</p>
     <div class="masthead-stats">
       <span><strong id="statActive">6</strong> active candidates</span>
       <span class="dot">·</span>
@@ -544,6 +580,7 @@ td.t-total{ font-family: var(--font-display); font-weight:700; font-size:16px; }
       <div class="segmented" role="group" aria-label="View mode">
         <button id="btnViewGrid" class="is-active" aria-pressed="true"><svg><use href="#i-columns"/></svg>Grid</button>
         <button id="btnViewMatrix" aria-pressed="false"><svg><use href="#i-chevron"/></svg>Matrix</button>
+        <button id="btnViewMap" aria-pressed="false"><svg><use href="#i-mapdot"/></svg>Map</button>
       </div>
       <div class="filterbar-actions">
         <button class="btn btn-ghost" id="btnToggleArchive"><svg><use href="#i-archive"/></svg>Archive <span id="archiveCount">(0)</span></button>
@@ -555,6 +592,12 @@ td.t-total{ font-family: var(--font-display); font-weight:700; font-size:16px; }
 
   <!-- ============ GRID VIEW ============ -->
   <section id="gridView" aria-label="Location cards"></section>
+
+  <!-- ============ MAP VIEW ============ -->
+  <section id="mapView" aria-label="Map of locations">
+    <div id="mapCanvas" class="map-canvas"></div>
+    <p class="map-note" id="mapNote"></p>
+  </section>
 
   <!-- ============ MATRIX VIEW ============ -->
   <section id="matrixView" class="table-wrap" style="display:none">
@@ -637,7 +680,19 @@ td.t-total{ font-family: var(--font-display); font-weight:700; font-size:16px; }
         </div>
       </div>
       <div class="form-error" id="errScores" style="margin-top:6px"></div>
-      <div class="form-row" style="margin-top:14px">
+      <div class="form-grid2" style="margin-top:14px">
+        <div class="form-row">
+          <label for="inputLat">Latitude (optional)</label>
+          <input type="number" id="inputLat" step="any" min="-90" max="90" inputmode="decimal" placeholder="7.0731">
+        </div>
+        <div class="form-row">
+          <label for="inputLng">Longitude (optional)</label>
+          <input type="number" id="inputLng" step="any" min="-180" max="180" inputmode="decimal" placeholder="125.6128">
+        </div>
+      </div>
+      <div class="coords-hint">Puts it on the map. In Google Maps, press and hold a spot and tap the coordinates to copy them.</div>
+      <div class="form-error" id="errCoords"></div>
+      <div class="form-row" style="margin-top:6px">
         <label for="inputPros">Pros (one per line)</label>
         <textarea id="inputPros" placeholder="High ground, close to the highway…"></textarea>
       </div>
@@ -691,6 +746,7 @@ td.t-total{ font-family: var(--font-display); font-weight:700; font-size:16px; }
   </div>
 </div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js" crossorigin="anonymous"></script>
 <script>
 (function(){
 'use strict';
@@ -699,68 +755,73 @@ td.t-total{ font-family: var(--font-display); font-weight:700; font-size:16px; }
 var STORAGE_KEY = 'davao-almanac.v1';
 var DEFAULT_WEIGHTS = { safety:1, schools:1, atmosphere:1, access:1 };
 
+/* HOW TO ADD A LOCATION: copy any entry below, give it a new unique id, a name,
+   four 1-10 scores, pros/cons, and lat/lng (right-click a spot in Google Maps to
+   copy its coordinates). It shows up on the cards, matrix, and map automatically.
+   Or just use the "Add Location" button in the page (saved to this browser only).
+   NOTE: lat/lng below are approximate district centers, not surveyed points. */
 var SEED = [
-  { id:'seed-buhangin', name:'Buhangin', safety:9.0, schools:9.0, atmosphere:8.0, access:9.5,
+  { id:'seed-buhangin', lat:7.1, lng:125.615, name:'Buhangin', safety:9.0, schools:9.0, atmosphere:8.0, access:9.5,
     pros:['High terrain and rolling hills with minimal flood risk','Strategic proximity to the airport and SM Lanang'],
     cons:['Higher price per square meter','Busier main thoroughfares'],
     status:'Active', archived:false, seeded:true },
-  { id:'seed-communal', name:'Communal', safety:9.5, schools:8.5, atmosphere:9.0, access:8.5,
+  { id:'seed-communal', lat:7.085, lng:125.595, name:'Communal', safety:9.5, schools:8.5, atmosphere:9.0, access:8.5,
     pros:['Elevated northern plateau','Quiet, low-density neighborhoods with spacious master-planned lots'],
     cons:['Rapidly developing — commercial hubs still filling in'],
     status:'Active', archived:false, seeded:true },
-  { id:'seed-mintal', name:'Mintal / Catalunan Grande', safety:9.0, schools:8.5, atmosphere:9.5, access:7.5,
+  { id:'seed-mintal', lat:7.065, lng:125.495, name:'Mintal / Catalunan Grande', safety:9.0, schools:8.5, atmosphere:9.5, access:7.5,
     pros:['High inland elevation near the mountain slopes with a cool climate','University-town feel around UP Mindanao'],
     cons:['Slower commute into the downtown/airport core during peak traffic'],
     status:'Active', archived:false, seeded:true },
-  { id:'seed-maa', name:'Ma-a', safety:7.5, schools:8.5, atmosphere:8.0, access:9.0,
+  { id:'seed-maa', lat:7.058, lng:125.588, name:'Ma-a', safety:7.5, schools:8.5, atmosphere:8.0, access:9.0,
     pros:['Highly central position','Quick commute access both north and south'],
     cons:['Elevated enclaves are safe, but low riverside sections flood','Peak-hour bottlenecks'],
     status:'Active', archived:false, seeded:true },
-  { id:'seed-mandug', name:'Mandug', safety:7.0, schools:7.0, atmosphere:9.0, access:7.0,
+  { id:'seed-mandug', lat:7.135, lng:125.578, name:'Mandug', safety:7.0, schools:7.0, atmosphere:9.0, access:7.0,
     pros:['Larger lot sizes at competitive prices','High space-to-cost ratio in a quiet countryside setting'],
     cons:['Infrastructure and bypass access still developing'],
     status:'Active', archived:false, seeded:true },
-  { id:'seed-talomo', name:'Talomo', safety:4.0, schools:8.0, atmosphere:8.5, access:8.0,
+  { id:'seed-talomo', lat:7.05, lng:125.55, name:'Talomo', safety:4.0, schools:8.0, atmosphere:8.5, access:8.0,
     pros:['Lush greenery and cool coastal breeze','Established communities'],
     cons:['High flood risk in low-lying basin / river-overflow zones','Strict elevation checks required before buying'],
     status:'High Risk', archived:false, seeded:true },
-  { id:'seed-catalunan-grande', name:'Catalunan Grande', safety:9.0, schools:8.5, atmosphere:8.5, access:8.0,
+  { id:'seed-catalunan-grande', lat:7.095, lng:125.525, name:'Catalunan Grande', safety:9.0, schools:8.5, atmosphere:8.5, access:8.0,
     pros:['Excellent elevation and flood safety above the coastal basin','Cool, breezy hillside setting with several established gated subdivisions'],
     cons:['Catalunan Grande Road gets congested during peak school-commute hours'],
     status:'Active', archived:false, seeded:true },
-  { id:'seed-matina-heights', name:'Matina Heights / Shrine Hills', safety:10.0, schools:9.5, atmosphere:8.5, access:9.0,
+  { id:'seed-matina-heights', lat:7.058, lng:125.575, name:'Matina Heights / Shrine Hills', safety:10.0, schools:9.5, atmosphere:8.5, access:9.0,
     pros:['Elevated bluffs directly overlooking downtown Davao with essentially zero flood risk','Top-tier proximity to Ateneo de Davao High School, Precious International School, and major hospitals'],
     cons:['Highly sought-after — higher price per square meter and limited open-lot availability'],
     status:'Active', archived:false, seeded:true },
-  { id:'seed-indangan', name:'Indangan', safety:9.5, schools:7.5, atmosphere:9.0, access:7.5,
+  { id:'seed-indangan', lat:7.12, lng:125.555, name:'Indangan', safety:9.5, schools:7.5, atmosphere:9.0, access:7.5,
     pros:['High natural elevation with strong flood safety on rolling northern hills','Notably lower lot prices than neighboring Buhangin, in a quiet suburban setting'],
     cons:['Commercial infrastructure still catching up — routine errands mean a short drive to Buhangin or Lanang'],
     status:'Active', archived:false, seeded:true },
-  { id:'seed-cabantian', name:'Cabantian (Upper)', safety:8.0, schools:7.5, atmosphere:7.5, access:9.0,
+  { id:'seed-cabantian', lat:7.11, lng:125.575, name:'Cabantian (Upper)', safety:8.0, schools:7.5, atmosphere:7.5, access:9.0,
     pros:['Direct access to the airport and northern bypass roads','Abundant gated subdivision options in the elevated sections'],
     cons:['Elevation varies sharply block-to-block — lower Cabantian floods while upper Cabantian stays dry, so verify elevation maps before buying'],
     status:'Active', archived:false, seeded:true },
-  { id:'seed-tacunan', name:'Tacunan', safety:10.0, schools:7.0, atmosphere:9.5, access:7.0,
+  { id:'seed-tacunan', lat:7.12, lng:125.49, name:'Tacunan', safety:10.0, schools:7.0, atmosphere:9.5, access:7.0,
     pros:['High altitude with cool mountain breezes and exceptionally clean air','Zero flood risk — well suited to custom estates or homestead-style builds'],
     cons:['45–60 minute commute into central Davao depending on highway traffic'],
     status:'Active', archived:false, seeded:true },
-  { id:'seed-toril', name:'Toril', safety:8.5, schools:8.5, atmosphere:8.5, access:7.5,
+  { id:'seed-toril', lat:7.02, lng:125.49, name:'Toril', safety:8.5, schools:8.5, atmosphere:8.5, access:7.5,
     pros:['Self-contained district with its own malls, hospitals, and private schools','Near eco-resorts and mountain destinations like Eden Nature Park'],
     cons:["Davao City's southernmost major district — farthest from the airport"],
     status:'Active', archived:false, seeded:true },
-  { id:'seed-panabo', name:'Panabo City', safety:8.5, schools:7.5, atmosphere:8.5, access:8.0,
+  { id:'seed-panabo', lat:7.308, lng:125.684, name:'Panabo City', safety:8.5, schools:7.5, atmosphere:8.5, access:8.0,
     pros:['High-growth area with competitive land prices','Easy drive to the airport via the northern highway with less dense traffic'],
     cons:['Across the regional boundary into Davao del Norte — daily commuting into central Davao means highway travel'],
     status:'Active', archived:false, seeded:true },
-  { id:'seed-tigatto', name:'Tigatto (Upper Terraces)', safety:7.5, schools:7.5, atmosphere:8.0, access:8.5,
+  { id:'seed-tigatto', lat:7.08, lng:125.605, name:'Tigatto (Upper Terraces)', safety:7.5, schools:7.5, atmosphere:8.0, access:8.5,
     pros:['Minutes from NCCC Mall Ma-a and the central business district','Elevated plots offer sweeping views of the river valley'],
     cons:['Riverside subdivisions like Jade Valley flood heavily — stick strictly to hilltop or high-ridge developments'],
     status:'Active', archived:false, seeded:true },
-  { id:'seed-bago-gallera', name:'Bago Gallera', safety:6.5, schools:7.5, atmosphere:6.5, access:8.5,
+  { id:'seed-bago-gallera', lat:7.052, lng:125.56, name:'Bago Gallera', safety:6.5, schools:7.5, atmosphere:6.5, access:8.5,
     pros:['Strong highway connectivity heading north or south','Growing selection of mid-to-high-end gated communities'],
     cons:['Elevation varies like neighboring Talomo — favor higher inland ridges over low-lying creek basins'],
     status:'Active', archived:false, seeded:true },
-  { id:'seed-santa-cruz', name:'Santa Cruz', safety:7.5, schools:5.5, atmosphere:9.0, access:5.0,
+  { id:'seed-santa-cruz', lat:6.8333, lng:125.4, name:'Santa Cruz', safety:7.5, schools:5.5, atmosphere:9.0, access:5.0,
     pros:['Outstanding lot sizes at a fraction of Davao City land prices','Close to mountain trails and beach resorts at the base of Mount Apo'],
     cons:['A separate municipality outside Davao City — better suited to a quieter, semi-retired lifestyle than daily city commuting'],
     status:'Active', archived:false, seeded:true }
@@ -790,8 +851,10 @@ var state = {
 };
 var hasRenderedOnce = false;
 var pendingCardDeleteId = null;
+var setViewFn = function(){};
 
 /* ===================== HELPERS ===================== */
+function validCoord(v, lo, hi){ var n = parseFloat(v); return (isNaN(n) || n < lo || n > hi) ? null : n; }
 function clone(o){ return JSON.parse(JSON.stringify(o)); }
 function clamp(n, lo, hi){ return Math.min(hi, Math.max(lo, n)); }
 function fmt1(n){ return (Math.round(n*10)/10).toFixed(1); }
@@ -848,7 +911,8 @@ function loadState(){
               cons: Array.isArray(l.cons) ? l.cons.filter(Boolean) : [],
               status: l.status === 'High Risk' ? 'High Risk' : 'Active',
               archived: !!l.archived,
-              seeded: !!l.seeded
+              seeded: !!l.seeded,
+              lat: validCoord(l.lat,-90,90), lng: validCoord(l.lng,-180,180)
             };
           });
           if(valid.length) locations = valid;
@@ -865,7 +929,13 @@ function loadState(){
 // localStorage state without disturbing their archived items or custom edits.
 function reconcileSeed(locations){
   var existingIds = {};
-  locations.forEach(function(l){ existingIds[l.id] = true; });
+  var seedById = {};
+  SEED.forEach(function(sl){ seedById[sl.id] = sl; });
+  locations.forEach(function(l){
+    existingIds[l.id] = true;
+    // older saved data predates map coordinates — fill them in from the seed
+    if((l.lat == null || l.lng == null) && seedById[l.id]){ l.lat = seedById[l.id].lat; l.lng = seedById[l.id].lng; }
+  });
   SEED.forEach(function(seedLoc){
     if(!existingIds[seedLoc.id]) locations.push(clone(seedLoc));
   });
@@ -960,6 +1030,8 @@ function notesHtml(items, cls, icon){
   }).join('') + '</ul>';
 }
 
+function hasCoords(l){ return typeof l.lat === 'number' && typeof l.lng === 'number'; }
+
 function cardHtml(loc, rank, isLeading, delayIdx, animate){
   var max = currentMax(state.weights);
   var statusTag = loc.status === 'High Risk'
@@ -991,6 +1063,7 @@ function cardHtml(loc, rank, isLeading, delayIdx, animate){
           '<span>Compare</span>' +
         '</label>' +
         '<div class="card-actions">' +
+          (hasCoords(loc) ? '<button class="btn-icon-sm" data-action="show-map" data-id="'+loc.id+'" title="Show '+escapeHtml(loc.name)+' on map" aria-label="Show '+escapeHtml(loc.name)+' on map"><svg><use href="#i-mapdot"/></svg></button>' : '') +
           '<button class="btn-icon-sm" data-action="edit" data-id="'+loc.id+'" title="Edit '+escapeHtml(loc.name)+'" aria-label="Edit '+escapeHtml(loc.name)+'"><svg><use href="#i-edit"/></svg></button>' +
           '<button class="btn-icon-sm" data-action="archive" data-id="'+loc.id+'" title="Archive '+escapeHtml(loc.name)+'" aria-label="Archive '+escapeHtml(loc.name)+'"><svg><use href="#i-archive"/></svg></button>' +
           '<button class="btn-icon-sm btn-icon-danger" data-action="delete-card" data-id="'+loc.id+'" title="Delete '+escapeHtml(loc.name)+'" aria-label="Delete '+escapeHtml(loc.name)+'"><svg><use href="#i-trash"/></svg></button>' +
@@ -1126,6 +1199,105 @@ function renderCompareModalBody(){
   compareModalBody.innerHTML = '<div class="compare-modal-grid" style="--cols:'+selected.length+'">'+cols+'</div>';
 }
 
+/* ===================== MAP ===================== */
+var lastMapData = null;
+var map = null, markerLayer = null, markersById = {}, mapFailed = false;
+var mapCanvas = document.getElementById('mapCanvas');
+var TIER_HEX = { palm:'#3D7355', sun:'#C4882B', clay:'#BC5B3E' };
+
+function ensureMap(){
+  if(map || mapFailed) return !!map;
+  if(typeof L === 'undefined'){
+    mapFailed = true;
+    mapCanvas.innerHTML = '<div class="map-fail">The map library could not load. Check your internet connection and reload — the cards and matrix still work.</div>';
+    return false;
+  }
+  map = L.map(mapCanvas, { scrollWheelZoom:false, tap:true }).setView([7.12, 125.55], 10);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom:18, attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+  }).addTo(map);
+  markerLayer = L.layerGroup().addTo(map);
+  map.on('focus', function(){ map.scrollWheelZoom.enable(); });
+  map.on('blur', function(){ map.scrollWheelZoom.disable(); });
+  return true;
+}
+
+function renderMap(withT, rankMap){
+  var note = document.getElementById('mapNote');
+  var located = withT.filter(hasCoords);
+  var missing = withT.filter(function(l){ return !hasCoords(l); });
+  note.textContent = 'Pin color follows each area\u2019s weighted score (green strong, amber fair, red weak); numbers are ranks. Positions are approximate district centers.'
+    + (missing.length ? ' Not on the map yet (no coordinates): ' + missing.map(function(l){ return l.name; }).join(', ') + '.' : '');
+  lastMapData = { withT: withT, rankMap: rankMap };
+  if(state.view !== 'map' && !map) return; // build the map lazily, on first visit
+  if(!ensureMap()) return;
+  markerLayer.clearLayers();
+  markersById = {};
+  var max = currentMax(state.weights);
+  located.forEach(function(loc){
+    var color = TIER_HEX[tier((loc.total/max)*10)];
+    var icon = L.divIcon({
+      className:'map-pin', iconSize:[30,30], iconAnchor:[15,30], popupAnchor:[0,-28],
+      html:'<span style="background:'+color+'"><b>'+rankMap[loc.id]+'</b></span>'
+    });
+    var m = L.marker([loc.lat, loc.lng], { icon:icon, title:loc.name, alt:loc.name, keyboard:true });
+    m.bindPopup('<div class="map-pop"><h4>'+escapeHtml(loc.name)+'</h4><p>Rank '+rankMap[loc.id]+' \u00b7 '+fmt1(loc.total)+' of '+fmt1(max)+(loc.status==='High Risk'?' \u00b7 High risk':'')+'</p>'
+      + '<button class="btn btn-primary" data-map-card="'+loc.id+'">View card</button></div>');
+    m.addTo(markerLayer);
+    markersById[loc.id] = m;
+  });
+  if(located.length && state.view === 'map' && !state.mapFitted){ fitMap(located); }
+}
+
+function fitMap(located){
+  if(!map) return;
+  var b = L.latLngBounds(located.map(function(l){ return [l.lat, l.lng]; }));
+  map.fitBounds(b, { padding:[30,30], maxZoom:12 });
+  state.mapFitted = true;
+}
+
+function showMap(){
+  if(!ensureMap()) return;
+  if(lastMapData) renderMap(lastMapData.withT, lastMapData.rankMap);
+  setTimeout(function(){
+    map.invalidateSize();
+    if(!state.mapFitted){ fitMap(getFiltered().filter(hasCoords)); }
+  }, 30);
+}
+
+function focusOnMap(id){
+  setViewFn('map');
+  var loc = state.locations.find(function(l){ return l.id === id; });
+  if(!map || !loc || !hasCoords(loc)) return;
+  setTimeout(function(){
+    map.invalidateSize();
+    map.setView([loc.lat, loc.lng], 13);
+    if(markersById[id]) markersById[id].openPopup();
+    document.getElementById('mapView').scrollIntoView({ behavior: prefersMotion()?'smooth':'auto', block:'start' });
+  }, 60);
+}
+
+function goToCard(id){
+  if(map) map.closePopup();
+  setViewFn('grid');
+  var card = document.querySelector('#gridView .card[data-id="'+id+'"]');
+  if(!card){
+    // card hidden by a filter — clear filters so the link always lands somewhere
+    state.search = ''; state.minSafety = 1;
+    document.getElementById('searchInput').value = '';
+    var ms = document.getElementById('minSafetyRange'); ms.value = 1; ms.dispatchEvent(new Event('input'));
+    card = document.querySelector('#gridView .card[data-id="'+id+'"]');
+  }
+  if(!card) return;
+  card.scrollIntoView({ behavior: prefersMotion()?'smooth':'auto', block:'center' });
+  card.classList.remove('is-flash'); void card.offsetWidth; card.classList.add('is-flash');
+}
+
+document.getElementById('mapView').addEventListener('click', function(e){
+  var b = e.target.closest('[data-map-card]');
+  if(b) goToCard(b.getAttribute('data-map-card'));
+});
+
 /* ===================== RENDER: archive ===================== */
 function renderArchive(){
   var archived = state.locations.filter(function(l){ return l.archived; });
@@ -1176,6 +1348,7 @@ function renderDynamic(){
   renderRadar(computeRadarSource(withT));
   renderCompareModalBody();
   renderArchive();
+  renderMap(withT, rankMap);
 
   // header stats
   document.getElementById('statActive').textContent = active.length;
@@ -1266,18 +1439,22 @@ function wireFilterBar(){
 
   var btnGrid = document.getElementById('btnViewGrid');
   var btnMatrix = document.getElementById('btnViewMatrix');
+  var btnMap = document.getElementById('btnViewMap');
   function setView(v){
     state.view = v;
-    var gridOn = v === 'grid';
-    btnGrid.classList.toggle('is-active', gridOn);
-    btnMatrix.classList.toggle('is-active', !gridOn);
-    btnGrid.setAttribute('aria-pressed', String(gridOn));
-    btnMatrix.setAttribute('aria-pressed', String(!gridOn));
-    document.getElementById('gridView').style.display = gridOn ? 'grid' : 'none';
-    document.getElementById('matrixView').style.display = gridOn ? 'none' : 'block';
+    [['grid',btnGrid],['matrix',btnMatrix],['map',btnMap]].forEach(function(p){
+      p[1].classList.toggle('is-active', p[0] === v);
+      p[1].setAttribute('aria-pressed', String(p[0] === v));
+    });
+    document.getElementById('gridView').style.display = v === 'grid' ? 'grid' : 'none';
+    document.getElementById('matrixView').style.display = v === 'matrix' ? 'block' : 'none';
+    document.getElementById('mapView').style.display = v === 'map' ? 'block' : 'none';
+    if(v === 'map') showMap();
   }
+  setViewFn = setView;
   btnGrid.addEventListener('click', function(){ setView('grid'); });
   btnMatrix.addEventListener('click', function(){ setView('matrix'); });
+  btnMap.addEventListener('click', function(){ setView('map'); });
 
   document.getElementById('btnToggleArchive').addEventListener('click', function(){
     state.showArchived = !state.showArchived;
@@ -1358,6 +1535,8 @@ function wireDelegatedActions(container){
         saveState();
         renderDynamic();
       }
+    } else if(action === 'show-map'){
+      focusOnMap(id);
     } else if(action === 'edit'){
       openLocationModal(id);
     } else if(action === 'delete-card'){
@@ -1426,6 +1605,7 @@ function openLocationModal(id){
   form.reset();
   document.getElementById('errName').textContent = '';
   document.getElementById('errScores').textContent = '';
+  document.getElementById('errCoords').textContent = '';
 
   if(id){
     var loc = state.locations.find(function(l){ return l.id === id; });
@@ -1442,6 +1622,8 @@ function openLocationModal(id){
     document.getElementById('inputPros').value = loc.pros.join('\n');
     document.getElementById('inputCons').value = loc.cons.join('\n');
     document.getElementById('inputStatus').value = loc.status;
+    document.getElementById('inputLat').value = hasCoords(loc) ? loc.lat : '';
+    document.getElementById('inputLng').value = hasCoords(loc) ? loc.lng : '';
   } else {
     state.editingId = null;
     document.getElementById('modalTitle').textContent = 'Survey a New Location';
@@ -1483,6 +1665,16 @@ document.getElementById('formAddLocation').addEventListener('submit', function(e
     return;
   }
 
+  var latRaw = document.getElementById('inputLat').value.trim(), lngRaw = document.getElementById('inputLng').value.trim();
+  var lat = null, lng = null;
+  if(latRaw || lngRaw){
+    lat = validCoord(latRaw,-90,90); lng = validCoord(lngRaw,-180,180);
+    if(lat === null || lng === null){
+      document.getElementById('errCoords').textContent = 'Enter both latitude and longitude as numbers (e.g. 7.0731 and 125.6128), or leave both empty.';
+      return;
+    }
+  }
+
   var pros = document.getElementById('inputPros').value.split('\n').map(function(s){ return s.trim(); }).filter(Boolean);
   var cons = document.getElementById('inputCons').value.split('\n').map(function(s){ return s.trim(); }).filter(Boolean);
   var status = document.getElementById('inputStatus').value;
@@ -1498,6 +1690,7 @@ document.getElementById('formAddLocation').addEventListener('submit', function(e
       editing.pros = pros;
       editing.cons = cons;
       editing.status = status;
+      editing.lat = lat; editing.lng = lng;
     }
   } else {
     state.locations.push({
@@ -1511,7 +1704,8 @@ document.getElementById('formAddLocation').addEventListener('submit', function(e
       cons: cons,
       status: status,
       archived: false,
-      seeded: false
+      seeded: false,
+      lat: lat, lng: lng
     });
   }
 
